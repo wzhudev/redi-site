@@ -12,7 +12,7 @@ export default {
   logo: () => {
     const { locale } = useRouter();
     return <>
-      <span className="mr-2 font-extrabold hidden md:inline">Redi</span>
+      <span className="mr-2 font-extrabold hidden md:inline">redi</span>
       <span className="text-gray-600 font-normal hidden md:inline">
         {TITLE_WITH_TRANSLATIONS[locale]}
       </span>
