@@ -12,7 +12,7 @@ import Callout from 'nextra-theme-docs/callout'
 
 ## 概览
 
-```typescript highlight=1,4,10,13
+```typescript 
 import { Inject } from '@wendellhu/redi'
 
 class AuthService {
@@ -29,6 +29,9 @@ class FileListService {
         // ...
     }
 }
+
+const injector = new Injector([[AuthService], [FileListService]])
+injector.get(AuthService)
 ```
 
 [立即开始](/docs/introduction) | [深入了解依赖注入](/blog/di)
