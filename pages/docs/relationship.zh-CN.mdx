@@ -1,0 +1,47 @@
+# 依赖关系
+
+声明了识别符和依赖项之后，就需要在依赖项之间声明依赖关系。有两种依赖项需要声明依赖关系，类依赖项和工厂函数依赖项。
+
+## 在类依赖项上声明依赖关系
+
+在类依赖项上声明依赖关系，可以用 `Inject` 装饰器：
+
+```ts highlight=3
+class MapService {
+  constructor(
+    @Inject(SatelliteService) private readonly satellite: SatelliteService
+  ) {}
+}
+```
+
+也可以使用 `createIdentifier` 方法创建的标识符：
+
+```ts highlight=7
+interface IPlatformService {}
+
+const IPlatformService = createIdentifier<IPlatformService>('platform')
+
+class DialogService {
+  constructor(
+    @IPlatformService private readonly platformSrc: IPlatformService
+  ) {}
+}
+```
+
+## 在工厂函数依赖项上声明依赖关系
+
+只需要在 `deps` 中列出即可：
+
+```ts highlight=9
+const item = [
+  I18NNumberTranspiler,
+  {
+    useFactory: (i18nService: I18NService) => {
+      return i18nService.isChinese()
+        ? new ChineseNumberTranspiler()
+        : new EnglishNumberTranspiler()
+    },
+    deps: [I18NService],
+  },
+]
+```

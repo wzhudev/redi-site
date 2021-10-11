@@ -1,15 +1,22 @@
+import { useRouter } from "next/router";
+
+const TITLE_WITH_TRANSLATIONS = {
+  "zh-CN": "轻量的依赖注入框架",
+};
+
 export default {
-  github: 'https://github.com/shuding/nextra',
-  docsRepositoryBase: 'https://github.com/shuding/nextra/blob/master',
-  titleSuffix: ' – Nextra',
-  logo: (
-    <>
+  github: 'https://github.com/wendellhu95/redi',
+  docsRepositoryBase: 'https://github.com/wendellhu95/redi-site/tree/main',
+  titleSuffix: ' – redi',
+  logo: () => {
+    const { locale } = useRouter();
+    return <>
       <span className="mr-2 font-extrabold hidden md:inline">Redi</span>
       <span className="text-gray-600 font-normal hidden md:inline">
-        A lightweight DI framework for React
+        {TITLE_WITH_TRANSLATIONS[locale]}
       </span>
     </>
-  ),
+  },
   head: (
     <>
       <meta name="msapplication-TileColor" content="#ffffff" />
@@ -61,7 +68,20 @@ export default {
   prevLinks: true,
   nextLinks: true,
   footer: true,
-  footerEditLink: 'Edit this page on GitHub',
+  footerEditLink: ({ locale }) => {
+    switch (locale) {
+      case "zh-CN":
+        return "在 GitHub 上编辑本页";
+      case "es-ES":
+        return "Edite esta página en GitHub";
+      case "ja":
+        return "Github で編集する";
+      case "ko":
+        return "Github에서 이 페이지 편집하기";
+      default:
+        return "Edit this page on GitHub";
+    }
+  },
   footerText: <>MIT {new Date().getFullYear()} © Wendell Hu.</>,
   unstable_faviconGlyph: '👋',
 }

@@ -1,0 +1,55 @@
+import Bleed from 'nextra-theme-docs/bleed'
+import Callout from 'nextra-theme-docs/callout'
+
+# redi
+
+[![Codecov](https://img.shields.io/codecov/c/github/wendellhu95/redi.svg?style=flat-square)](https://codecov.io/gh/wendellhu95/redi)
+
+
+**redi** (发音为 'ready'）是 TypeScript 的依赖注入库，另外提供了一组 React 绑定。
+
+<Callout>借助依赖注入模式，写出更少耦合、更易调整、更易维护的代码。</Callout>
+
+## 概览
+
+```typescript highlight=1,4,10,13
+import { Inject } from '@wendellhu/redi'
+
+class AuthService {
+    public getCurrentUserInfo(): UserInfo {
+        // your implementation here...
+    }
+}
+
+class FileListService {
+   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
+
+    public getUserFiles(): Promise<Files> {
+       const currentUser = this.authService.getCurrentUserInfo()
+        // ...
+    }
+}
+```
+
+[立即开始](/docs/introduction)
+
+## 功能
+
+- **渐进式引入**。不像 Angular，redi 并不强制你在整个项目使用依赖注入模式，你可以在任何想要的地方应用。
+- 支持多种类型的依赖项，包括：
+  - 类
+  - JavaScript 原始类型值和对象
+  - 工厂函数
+  - 异步依赖项
+- 支持多值依赖注入
+  - `@Required`
+  - `@Optional`
+  - `@Many`
+- **支持层次化依赖注入**，支持对依赖查找过程进行控制
+  - `@SkipSelf`
+  - `@Self`
+- **惰性实例化**
+
+## 链接
+
+[Demo TodoMVC](https://wendellhu95.github.io/redi-todomvc/) | [Demo 仓库](https://github.com/wendellhu95/redi-todomvc)

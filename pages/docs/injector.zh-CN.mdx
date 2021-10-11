@@ -1,0 +1,12 @@
+# 注入器
+
+注入器在依赖注入系统中起到中心作用，它负责持有绑定并根据标识符来实例化依赖项。
+
+除了之前已经接触到的 `get` API，注入器主要有以下 API：
+
+* `constructor(collectionOrDependencies?: Dependency[], parent?: Injector)`，构造 Injector，第一个参数是该注入器所持有的依赖项，可以传递另一个 Injector 作为父注入器
+* `createChild(dependencies?: Dependency[]): Injector`，创建一个子注入器
+* `add<T>(dependency: Ctor<T> | DependencyPair<T> | DependencyIdentifier<T>, item?: DependencyItem<T> | T): void`，添加依赖项
+* `get<T>(id: DependencyIdentifier<T>, quantityOrLookup?: Quantity | LookUp, lookUp?: LookUp): T[] | T | null`，以同步方式获取依赖项
+* `getAsync<T>(id: DependencyIdentifier<T>): Promise<T>`，以异步方式获取异步依赖项
+* `createInstance<T extends unknown[], U extends unknown[], C>(ctor: new (...args: [...T, ...U]) => C, ...customArgs: T)`，用注入器来实例化一个类，可以通过追加参数来补充被实例化的类的构造参
