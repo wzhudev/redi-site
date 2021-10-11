@@ -51,7 +51,7 @@ class FileListService {
 }
 ```
 
-显然，FileListService 依赖于 AuthService，让我们一起来看看如何使用依赖注入模式改造这段代码。
+显然，`FileListService` 依赖于 `AuthService`，让我们一起来看看如何使用依赖注入模式改造这段代码。
 
 **第一步：声明依赖关系**
 
@@ -74,7 +74,7 @@ class FileListService {
 }
 ```
 
-使用 Inject 装饰器，在 FileListService 的构造函数上，将 AuthService 声明为它的一个依赖。
+使用 `Inject` 装饰器，在 `FileListService` 的构造函数上，将 `AuthService` 声明为它的一个依赖。
 
 **第二步：提供依赖**
 
@@ -85,7 +85,7 @@ import { Injector } from '@wendellhu/redi'
 const injector = new Injector([[FileListService], [AuthService]])
 ```
 
-只需要将依赖项添加到 Injector 对象中。
+只需要将依赖项添加到 `Injector` 对象中。
 
 **第三步：完成！**
 

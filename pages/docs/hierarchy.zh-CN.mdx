@@ -20,7 +20,7 @@ const childInjector = new Injector([[OrderService]], parentInjector)
 
 ## 单向依赖查找
 
-当子注入器无法解析标识符时，它将会调用其父注入器进行解析，如果父注入器不存在且该标识符对应的依赖是必须的才会抛出错误。下面的例子中，PlatformService 就是由 parentInjector 创建的。
+当子注入器无法解析标识符时，它将会调用其父注入器进行解析，如果父注入器不存在且该标识符对应的依赖是必须的才会抛出错误。下面的例子中，`PlatformService` 就是由 `parentInjector` 创建的。
 
 ```ts highlight=2
 childInjector.get(PlatformService)

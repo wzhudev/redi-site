@@ -8,6 +8,7 @@ export default {
   github: 'https://github.com/wendellhu95/redi',
   docsRepositoryBase: 'https://github.com/wendellhu95/redi-site/tree/main',
   titleSuffix: ' – redi',
+  floatTOC: true,
   logo: () => {
     const { locale } = useRouter();
     return <>
