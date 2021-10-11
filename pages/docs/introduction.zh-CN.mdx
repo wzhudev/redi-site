@@ -3,7 +3,7 @@ import Callout from 'nextra-theme-docs/callout'
 # 入门
 
 <Callout>
-  在学习 redi 的使用方法前，建议先了解依赖注入模式的一些基本概念
+  不了解依赖注入，或者没想好要不要使用依赖注入？请请阅读我们的[博客](/blog/di)。
 </Callout>
 
 ## 安装
@@ -59,18 +59,18 @@ class FileListService {
 import { Inject } from '@wendellhu/redi'
 
 class AuthService {
-    public getCurrentUserInfo(): UserInfo {
-        // your implementation here...
-    }
+  public getCurrentUserInfo(): UserInfo {
+    // your implementation here...
+  }
 }
 
 class FileListService {
-   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
+  constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
-    public getUserFiles(): Promise<Files> {
-       const currentUser = this.authService.getCurrentUserInfo()
-        // ...
-    }
+  public getUserFiles(): Promise<Files> {
+    const currentUser = this.authService.getCurrentUserInfo()
+    // ...
+  }
 }
 ```
 
@@ -80,7 +80,6 @@ class FileListService {
 
 ```typescript
 import { Injector } from '@wendellhu/redi'
-
 
 const injector = new Injector([[FileListService], [AuthService]])
 ```
@@ -98,3 +97,5 @@ const fileListService = injector.get(FileListService)
 ```typescript
 const authService = injector.get(FileListService)
 ```
+
+阅读下一章节以了解依赖注入模式中的基本概念。
