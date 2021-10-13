@@ -1,0 +1,47 @@
+import Callout from 'nextra-theme-docs/callout'
+
+# Identifier
+
+There are two ways to create an identifier.
+
+## Class as identifier
+
+A class could be the identifier of iteself:
+
+```typescript
+class ClassDependency {}
+
+const injector = new Injector([[ClassDependency]])
+```
+
+So you can get the dependency from the injector directly:
+
+```ts
+const classDependency = injector.get(ClassDependency)
+```
+
+However, this approach leave abstraction aside and hence is less flexible.
+
+## `IdentifierDecorator`
+
+It is recommend to create an `IdentifierDecorator` via `createIdentifier`:
+
+```ts
+interface IPlatformService {}
+
+const IPlatformService = createIdentifier<IPlatformService>('platform')
+
+class PlatformServiceImpl implements IPlatformService {}
+
+const injector = new Injector([[IPlatformService, { useClass: PlatformServiceImpl }]])
+
+const platformIns = injector.get(IPlatformService)
+```
+
+This approach is considered better because:
+
+* 符合[依赖倒置](https://zh.wikipedia.org/wiki/%E4%BE%9D%E8%B5%96%E5%8F%8D%E8%BD%AC%E5%8E%9F%E5%88%99)原则，这样当你需要更改 IPlatformService 的实现时，就不必更改其他的依赖项
+* `IdentifierDecorator`, as its name suggests, could be used as a decorator to declare dependency among items.
+
+
+<Callout>In TypeScript, types and values take different namespace. So it is legal  当中，类型变量和值变量使用不同的命名空间，所以一个接口和一个值有完全相同的名称 `IPlatformService` 是合法的，这个小技巧能够将接口和识别符结合起来，降低开发者的心智负担。</Callout>

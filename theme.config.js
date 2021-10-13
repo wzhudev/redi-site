@@ -1,15 +1,15 @@
 import { useRouter } from "next/router";
 
-const TITLE_WITH_TRANSLATIONS = {
-  "zh-CN": "轻量的依赖注入框架",
-};
-
 export default {
   github: 'https://github.com/wendellhu95/redi',
   docsRepositoryBase: 'https://github.com/wendellhu95/redi-site/tree/main',
   titleSuffix: ' – redi',
   floatTOC: true,
   logo: () => {
+    const TITLE_WITH_TRANSLATIONS = {
+      "zh-CN": "轻量的依赖注入框架",
+      "en-US": "a lightweight dependency injection library"
+    };
     const { locale } = useRouter();
     return <>
       <span className="mr-2 font-extrabold hidden md:inline">redi</span>
@@ -85,4 +85,8 @@ export default {
   },
   footerText: <>MIT {new Date().getFullYear()} © Wendell Hu.</>,
   unstable_faviconGlyph: '👋',
+  i18n: [
+    { locale: "en-US", text: "English" },
+    { locale: "zh-CN", text: "简体中文" },
+  ],
 }
