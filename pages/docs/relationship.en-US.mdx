@@ -1,0 +1,73 @@
+import Callout from 'nextra-theme-docs/callout'
+
+# Dependency relationship
+
+After creating identifiers and dependency items, you need to declare dependency relationship among dependencies. There are two types of dependency items that could dependent on others: class items and factory function items.
+
+## On a class
+
+To declare dependencies of a class, you could use the `Injector` decorator:
+
+```ts highlight=3
+class MapService {
+  constructor(
+    @Inject(SatelliteService) private readonly satellite: SatelliteService
+  ) {}
+}
+```
+
+or an `IdentifierDecorator`:
+
+```ts highlight=7
+interface IPlatformService {}
+
+const IPlatformService = createIdentifier<IPlatformService>('platform')
+
+class DialogService {
+  constructor(
+    @IPlatformService private readonly platformSrc: IPlatformService
+  ) {}
+}
+```
+
+## On a factory
+
+You should list all its dependencies in the `deps` property:
+
+```ts highlight=9
+const item = [
+  I18NNumberTranspiler,
+  {
+    useFactory: (i18nService: I18NService) => {
+      return i18nService.isChinese()
+        ? new ChineseNumberTranspiler()
+        : new EnglishNumberTranspiler()
+    },
+    deps: [I18NService],
+  },
+]
+```
+
+## forwardRef
+
+In the following example, `Person` is defined before `Father` but relies on `Father`. In this case, you should use `forwardRef` to wrap `Father`. Otherwise redi would receive `undefined` when tries to figure out dependencies of `Person` (and it would throw an error in that case).
+
+```ts highlight=5,7
+import { Self, SkipSelf } from '@wendellhu/redi'
+
+class Person {
+  constructor(
+    @Self() @Inject(forwardRef(() => Father)) private readonly father: Father,
+    @SkipSelf()
+    @Inject(forwardRef(() => Father))
+    private readonly grandfather: Father
+  ) {}
+}
+
+class Man extends Person {}
+class Father extends Man {
+  changeDiaper(): void {}
+}
+```
+
+<Callout>This is not related to redi itself but how TypeScript is transpiled into JavaScript.</Callout>

@@ -1,0 +1,47 @@
+import Callout from 'nextra-theme-docs/callout'
+
+# Identifier
+
+There are two ways to create an identifier.
+
+## Class as identifier
+
+A class could be the identifier of iteself:
+
+```typescript
+class ClassDependency {}
+
+const injector = new Injector([[ClassDependency]])
+```
+
+So you can get the dependency from the injector directly:
+
+```ts
+const classDependency = injector.get(ClassDependency)
+```
+
+However, this approach leave abstraction aside and hence is less flexible.
+
+## `IdentifierDecorator`
+
+It is recommend to create an `IdentifierDecorator` via `createIdentifier`:
+
+```ts
+interface IPlatformService {}
+
+const IPlatformService = createIdentifier<IPlatformService>('platform')
+
+class PlatformServiceImpl implements IPlatformService {}
+
+const injector = new Injector([[IPlatformService, { useClass: PlatformServiceImpl }]])
+
+const platformIns = injector.get(IPlatformService)
+```
+
+This approach is considered better because:
+
+* It complies with [the principle of dependency inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
+* `IdentifierDecorator`, as its name suggests, could be used as a decorator to declare dependency among items.
+
+
+<Callout>In TypeScript, types and values take different namespace. So it is legal for an interface and a value to share the name `IPlatformService`.</Callout>

@@ -1,10 +1,10 @@
 import Callout from 'nextra-theme-docs/callout'
 
-# 依赖项
+# Dependency Item
 
-## 类依赖项
+## Class Item
 
-类可以直接作为依赖项，注册在注入器中，此时依赖项对应的标识符即为类本身：
+Class could be a dependency item directly and registered in an injector. In this case, the class is the identifier as well.
 
 ```ts
 class AuthService {}
@@ -12,7 +12,7 @@ class AuthService {}
 const injector = new Injector([[AuthService]])
 ```
 
-也可以将 `IdentifierDecorator` 作为标识符，此时，依赖项是一个符合 `ClassDependencyItem` 接口的对象：
+You could also use an `IdentifierDecorator` as identifier. In this case, the dependency item is an object that implements `ClassDependencyItem`:
 
 ```ts
 export interface ClassDependencyItem<T> {
@@ -21,7 +21,7 @@ export interface ClassDependencyItem<T> {
 }
 ```
 
-例子：
+An example:
 
 ```ts
 interface IAuthService {}
@@ -35,9 +35,9 @@ const injector = new Injector([
 ])
 ```
 
-### 惰性实例化
+### Lazy instantiation
 
-你可以将 `lazy` 设置为 `true`，这样该依赖就不会在它的依赖实例化时被实例化，而是等到实际被调用之后才实例化。
+You could set `true` to indicate the inject not to instantiate the dependency item when it is required but when its property or method is actually accessed or CPU is idle:
 
 ```ts highlight=21
 interface IHttpInterceptor {
@@ -64,27 +64,27 @@ const injector = new Injector([
 ])
 ```
 
-在上面的例子中，`FileListService` 依赖了 `AuthHttpInterceptor`，从注入器获取 `FileListService` 时该类会实例化，但是 `AuthHttpInterceptor` 并未实例化：
+In this case, `FileListService` depends on `AuthHttpInterceptor`. When you get `FileListService` it would be constructed but nor `AuthHttpInterceptor`. 
 
 ```ts
 const fileListService = injector.get(FileListService)
 ```
 
-只有实际访问了 AuthHttpInterceptor 方法时才会实例化：
+When you access `intercept` of `AuthHttpInterceptor` it would be constructed:
 
 ```ts
 fileListService.request()
 ```
 
-通过延迟实例化部分依赖，可以降低应用初始化时的性能开销。
+By postponing instantiation of some dependencies, start-up performance could get optimized.
 
 <Callout>
-  请仔细检查被延迟实例化的类的构造函数中是否存在副作用，否则会导致应用不能按你期望的方式运行。
+  Please be careful to check if there is any side effect in constructors. The application may not work as you expect in that case.
 </Callout>
 
-## 值作为依赖项
+## Value item
 
-可以提供一个符合 `ValueDependencyItem` 接口的对象作为值依赖项：
+You could provide an object that implements `ValueDependencyItem` as a value item:
 
 ```ts
 export interface ValueDependencyItem<T> {
@@ -92,13 +92,13 @@ export interface ValueDependencyItem<T> {
 }
 ```
 
-该值将会直接被提供给依赖它的依赖项。
+The value would directly injected into its dependents.
 
-## 工厂函数依赖项
+## Factory item
 
-工厂函数依赖项将实例化的过程重新交还到开发者的手中，这样就有了更高的灵活性，并且它可以像类依赖项一样声明自己的依赖项。
+The factory item give back the control of instantiation back to you, and it could declare its dependencies like a class item.
 
-工厂函数依赖项应当是一个符合下面接口的对象：
+It should implements te following interface:
 
 ```ts
 export interface FactoryDependencyItem<T> {
@@ -107,7 +107,7 @@ export interface FactoryDependencyItem<T> {
 }
 ```
 
-例子：
+An example:
 
 ```ts
 interface I18NNumberTranspiler {
@@ -140,9 +140,9 @@ const injector = new Injector([
 ]
 ```
 
-## 异步依赖项
+## Async item
 
-有些时候某些依赖并不需要在加载首屏所需 JS 代码的时候加载，因此你可以通过异步依赖项和 webpack 的 import 的函数来懒加载此依赖。此时，该依赖项必须是一个满足 `AsyncDependencyItem` 的对象：
+Sometimes it is not necessary to get a dependency in a synchronous way. You could use Async Item and `import` function of webpack to lazy load a dependency. To do that, you should provide an object that implements the following interface:
 
 ```ts
 export interface AsyncDependencyItem<T> {
@@ -152,9 +152,9 @@ export interface AsyncDependencyItem<T> {
 }
 ```
 
-`useAsync` 函数必须要异步返回一个已经实例化的依赖项，或者是异步依赖项之外的其他依赖项。同时，声明依赖关系时，声明的并不是对应的标识符，而是 `AsyncHook`。
+`useAsync` function must return an dependency item except for async item.
 
-例子：
+An example:
 
 ```ts highlight=10-11,16,25
 // index.ts

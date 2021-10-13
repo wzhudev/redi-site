@@ -1,0 +1,12 @@
+# Injector
+
+Injector plays an important role in dependency injection. It holds a set of bindings and resolve identifiers.
+
+It has the following API:
+
+* `constructor(collectionOrDependencies?: Dependency[], parent?: Injector)`. The first parameter is an array of dependencies that you want this injector to hold. And the second parameter is optional. It provided, it would be the injector's parent.
+* `createChild(dependencies?: Dependency[]): Injector`. Create a child injector.
+* `add<T>(dependency: Ctor<T> | DependencyPair<T> | DependencyIdentifier<T>, item?: DependencyItem<T> | T): void`. Add a dependency into the injector.
+* `get<T>(id: DependencyIdentifier<T>, quantityOrLookup?: Quantity | LookUp, lookUp?: LookUp): T[] | T | null`. Get a sync dependency.
+* `getAsync<T>(id: DependencyIdentifier<T>): Promise<T>`. Get a dependency in an async way.
+* `createInstance<T extends unknown[], U extends unknown[], C>(ctor: new (...args: [...T, ...U]) => C, ...customArgs: T)`. To instantiate a class.

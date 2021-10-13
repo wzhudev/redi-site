@@ -1,0 +1,11 @@
+{
+  "introduction": "Introduction",
+  "concepts": "Concepts",
+  "identifier": "Identifier",
+  "item": "Dependency item",
+  "relationship": "Dependency relationship",
+  "nary": "N-ary",
+  "injector": "Injector",
+  "hierarchy": "Hierarchy injection system",
+  "react": "Using in React"
+}

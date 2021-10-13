@@ -25,11 +25,11 @@ const App = connectInjector(function AppImpl() {
 }, injector)
 ```
 
-connectDependencies 和 connectInjector 的区别在于：前者所绑定的组件每次创建时，都会创建一个注入器，各个注入器之间相互独立；后者所绑定的组件并不创建注入器，共享同一个注入器。
+`connectDependencies` 和 `connectInjector` 的区别在于：前者所绑定的组件每次创建时，都会创建一个注入器，各个注入器之间相互独立；后者所绑定的组件并不创建注入器，共享同一个注入器。
 
-另外，当绑定过的组件构成父子关系时，connectDependencies 会自动将两个注入器也构建父子关系。
+另外，当绑定过的组件构成父子关系时，`connectDependencies` 会自动将两个注入器也构建父子关系。
 
-所以，推荐优先使用 connectDependencies，connectInjector 仅用于根组件。
+所以，推荐优先使用 `connectDependencies`，`connectInjector` 仅用于根组件。
 
 ## 组件使用依赖项
 
@@ -42,7 +42,7 @@ function Dashboard() {
 }
 ```
 
-在类组件中使用依赖项，可以使用 WithDependency 装饰器。
+在类组件中使用依赖项，可以使用 `WithDependency` 装饰器。
 
 ```tsx highlight=2
 class Dashboard extends React.Component {
