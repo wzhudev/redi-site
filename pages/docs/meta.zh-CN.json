@@ -4,7 +4,6 @@
   "identifier": "识别符",
   "item": "依赖项",
   "relationship": "依赖关系",
-  "nary": "多值注入",
   "injector": "注入器",
   "hierarchy": "层次依赖注入系统",
   "react": "在 React 中使用",

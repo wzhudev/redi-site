@@ -1,10 +1,6 @@
 import Callout from 'nextra-theme-docs/callout'
 
-# 入门
-
-<Callout>
-  不了解依赖注入，或者没想好要不要使用依赖注入？请请阅读我们的[博客](/blog/di)。
-</Callout>
+# 快速上手
 
 ## 安装
 
@@ -14,7 +10,7 @@ import Callout from 'nextra-theme-docs/callout'
 yarn add @wendellhu/redi
 ```
 
-或者使用 npm 等你喜欢的包管理器：
+或者使用 npm 等其他包管理器：
 
 ```shell
 npm install @wendellhu/redi
@@ -30,9 +26,13 @@ npm install @wendellhu/redi
 }
 ```
 
+<Callout>
+为了让大家能够方便地使用依赖注入模式开始一个新项目，我们准备了脚手架工具。阅读[设置开发环境](/docs/env)一节了解更多。
+</Callout>
+
 ## 基本使用
 
-让我们来看这样的一个例子：
+这里介绍 redi 的基本使用方法。我们来看这样的一个例子，在获取文件列表之前，我们需要先获取权限信息：
 
 ```tsx
 class AuthService {
@@ -86,7 +86,7 @@ const injector = new Injector([[FileListService], [AuthService]])
 
 只需要将依赖项添加到 `Injector` 对象中。
 
-**第三步：完成！**
+**第三步：从注入器获取依赖**
 
 ```typescript
 const fileListService = injector.get(FileListService)
