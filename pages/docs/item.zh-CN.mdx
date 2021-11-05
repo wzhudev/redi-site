@@ -2,37 +2,28 @@ import Callout from 'nextra-theme-docs/callout'
 
 # 依赖项
 
+redi 支持以下几种依赖项：
+
+* 类依赖项
+* 值依赖项
+* 工厂依赖项
+* 异步依赖项
+
 ## 类依赖项
 
-类可以直接作为依赖项，注册在注入器中，此时依赖项对应的标识符即为类本身：
+类可以直接作为依赖项：
 
 ```ts
 class AuthService {}
-
-const injector = new Injector([[AuthService]])
 ```
 
-也可以将 `IdentifierDecorator` 作为标识符，此时，依赖项是一个符合 `ClassDependencyItem` 接口的对象：
+也是可以一个符合 `ClassDependencyItem` 接口的对象：
 
 ```ts
 export interface ClassDependencyItem<T> {
   useClass: Ctor<T>
   lazy?: boolean
 }
-```
-
-例子：
-
-```ts
-interface IAuthService {}
-
-const IAuthService = createIdentifier<IAuthService>('auth')
-
-class AuthService implements IAuthService {}
-
-const injector = new Injector([
-  [IAuthService, { useClass: AuthService, lazy: true }],
-])
 ```
 
 ### 惰性实例化
@@ -54,7 +45,7 @@ class FileListService {
   ) {}
 
   request() {
-    this.httIp.intercept()
+    this.httpI.intercept()
   }
 }
 
@@ -73,18 +64,18 @@ const fileListService = injector.get(FileListService)
 只有实际访问了 AuthHttpInterceptor 方法时才会实例化：
 
 ```ts
-fileListService.request()
+fileListService.request() // -> this.httpI.intercept()
 ```
 
 通过延迟实例化部分依赖，可以降低应用初始化时的性能开销。
 
 <Callout>
-  请仔细检查被延迟实例化的类的构造函数中是否存在副作用，否则会导致应用不能按你期望的方式运行。
+请确保被延迟实例化的类的构造函数中不存在副作用，否则会导致应用不能按你期望的方式运行。
 </Callout>
 
 ## 值作为依赖项
 
-可以提供一个符合 `ValueDependencyItem` 接口的对象作为值依赖项：
+值依赖项是一个符合 `ValueDependencyItem` 接口的对象：
 
 ```ts
 export interface ValueDependencyItem<T> {
@@ -92,7 +83,7 @@ export interface ValueDependencyItem<T> {
 }
 ```
 
-该值将会直接被提供给依赖它的依赖项。
+该值将会直接被提供给依赖它的依赖。
 
 ## 工厂函数依赖项
 

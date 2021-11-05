@@ -3,6 +3,7 @@
   "concepts": "概念",
   "identifier": "识别符",
   "item": "依赖项",
+  "binding": "绑定",
   "relationship": "依赖关系",
   "injector": "注入器",
   "hierarchy": "层次依赖注入系统",

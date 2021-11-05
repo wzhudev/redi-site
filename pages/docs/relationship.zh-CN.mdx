@@ -2,7 +2,12 @@ import Callout from 'nextra-theme-docs/callout'
 
 # 依赖关系
 
-声明了识别符和依赖项之后，就需要在依赖项之间声明依赖关系。有两种依赖项需要声明依赖关系，类依赖项和工厂函数依赖项。
+声明了识别符和依赖项之后，就需要在依赖项之间声明依赖关系。
+
+有两种依赖项需要声明依赖关系：
+
+* 类依赖项
+* 工厂函数依赖项
 
 ## 在类依赖项上声明依赖关系
 
@@ -29,49 +34,6 @@ class DialogService {
   ) {}
 }
 ```
-
-## 在工厂函数依赖项上声明依赖关系
-
-只需要在 `deps` 中列出即可：
-
-```ts highlight=9
-const item = [
-  I18NNumberTranspiler,
-  {
-    useFactory: (i18nService: I18NService) => {
-      return i18nService.isChinese()
-        ? new ChineseNumberTranspiler()
-        : new EnglishNumberTranspiler()
-    },
-    deps: [I18NService],
-  },
-]
-```
-
-## forwardRef
-
-在下面的例子当中 `Person` 先于 `Father` 声明，但是又依赖于 `Father`，这种情况下，你需要使用 `forwardRef` 来封装一次 `Father`，否则 redi 在记录依赖关系时， `Father` 的值会是 `undefined`。如果这种情况确实发生了，redi 会报错。
-
-```ts highlight=5,7
-import { Self, SkipSelf } from '@wendellhu/redi'
-
-class Person {
-  constructor(
-    @Self() @Inject(forwardRef(() => Father)) private readonly father: Father,
-    @SkipSelf()
-    @Inject(forwardRef(() => Father))
-    private readonly grandfather: Father
-  ) {}
-}
-
-class Man extends Person {}
-class Father extends Man {
-  changeDiaper(): void {}
-}
-```
-
-<Callout>这并不是 redi 的问题，而是和 TypeScript 如何编译 class 有关。在装饰器生效时，`Father` 类所对应的标识符的值是 `undefined`</Callout>
-
 
 ## 可选依赖
 
@@ -121,3 +83,58 @@ const injector = new Injector([
 ])
 injector.get(MapService)
 ```
+
+## 在工厂函数依赖项上声明依赖关系
+
+只需要在 `deps` 中列出即可：
+
+```ts highlight=9
+const item = [
+  I18NNumberTranspiler,
+  {
+    useFactory: (i18nService: I18NService) => {
+      return i18nService.isChinese()
+        ? new ChineseNumberTranspiler()
+        : new EnglishNumberTranspiler()
+    },
+    deps: [I18NService],
+  },
+]
+```
+
+工厂函数一样可以声明可选依赖和多值依赖，只是语法会稍有不同：
+
+```ts highlight=6
+const item = [
+  [ISatelliteService, { useClass: GPSSatellite }],
+  [ISatelliteService, { useClass: BeidouSatellite }],
+  [IMapService, {
+    useFactory: (satellites: ISatelliteService[]) => new MapService(satellites),
+    deps: [new Many(), ISatelliteService]
+  }]
+]
+```
+
+## `forwardRef`
+
+在下面的例子当中 `Person` 先于 `Father` 声明，但是又依赖于 `Father`，这种情况下，你需要使用 `forwardRef` 来封装一次 `Father`，否则 redi 在记录依赖关系时， `Father` 的值会是 `undefined`。如果这种情况确实发生了，redi 会报错。
+
+```ts highlight=5,7
+import { Self, SkipSelf } from '@wendellhu/redi'
+
+class Person {
+  constructor(
+    @Self() @Inject(forwardRef(() => Father)) private readonly father: Father,
+    @SkipSelf()
+    @Inject(forwardRef(() => Father))
+    private readonly grandfather: Father
+  ) {}
+}
+
+class Man extends Person {}
+class Father extends Man {
+  changeDiaper(): void {}
+}
+```
+
+<Callout>这和 TypeScript 如何编译 class 有关。在装饰器生效时，`Father` 类所对应的标识符的值是 `undefined` 。</Callout>

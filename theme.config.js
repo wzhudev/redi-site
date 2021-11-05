@@ -86,7 +86,7 @@ export default {
   footerText: <>MIT {new Date().getFullYear()} © Wendell Hu.</>,
   unstable_faviconGlyph: '👋',
   i18n: [
-    { locale: "en-US", text: "English" },
+    // { locale: "en-US", text: "English" },
     { locale: "zh-CN", text: "简体中文" },
   ],
 }

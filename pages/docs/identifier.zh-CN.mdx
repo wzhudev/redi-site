@@ -2,7 +2,10 @@ import Callout from 'nextra-theme-docs/callout'
 
 # 识别符
 
-有两种方法创建一个识别符。
+有两种方法创建一个识别符：
+
+* 一个类可以用它本身作为标识符
+* 调用 `createIdentifier` 函数创建标识符
 
 ## 类作为标识符
 
@@ -22,18 +25,17 @@ const classDependency = injector.get(ClassDependency)
 
 这是最简单的方法，不过这也意味着没有抽象，降低了依赖注入带来的灵活性。
 
-## `IdentifierDecorator`
+## `createIdentifier`
 
-更推荐的做法是通过 `createIdentifier` 方法创建标识符，该标识符是一个 `IdentifierDecorator`：
+更推荐的做法是通过 `createIdentifier` 方法创建标识符，该标识符的类型是 `IdentifierDecorator`。在下面这个例子中，我们创建了一个名为 `IPlatformService` 的识别符，然后在提供该识别符对应的依赖时，选择具体的类 `PcPlatformService`：
 
-```ts
-interface IPlatformService {}
-
+```ts highlight=4-6
+interface IPlatformService {
+  getUniqID(): string
+}
 const IPlatformService = createIdentifier<IPlatformService>('platform')
-
-class PlatformServiceImpl implements IPlatformService {}
-
-const injector = new Injector([[IPlatformService, { useClass: PlatformServiceImpl }]])
+class PcPlatformService implements IPlatformService {}
+const injector = new Injector([[IPlatformService, { useClass: PcPlatformService }]])
 
 const platformIns = injector.get(IPlatformService)
 ```
@@ -42,6 +44,5 @@ const platformIns = injector.get(IPlatformService)
 
 * 符合[依赖倒置](https://zh.wikipedia.org/wiki/%E4%BE%9D%E8%B5%96%E5%8F%8D%E8%BD%AC%E5%8E%9F%E5%88%99)原则，这样当你需要更改 IPlatformService 的实现时，就不必更改其他的依赖项
 * 识别符可以用作装饰器来声明依赖项之间的依赖关系
-
 
 <Callout>在 TypeScript 当中，类型变量和值变量使用不同的命名空间，所以一个接口和一个值有完全相同的名称 `IPlatformService` 是合法的，这个小技巧能够将接口和识别符结合起来，降低开发者的心智负担。</Callout>
