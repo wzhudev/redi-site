@@ -97,7 +97,7 @@ const item = [
         ? new ChineseNumberTranspiler()
         : new EnglishNumberTranspiler()
     },
-    deps: [I18NService],
+    deps: [[I18NService]],
   },
 ]
 ```
@@ -110,7 +110,7 @@ const item = [
   [ISatelliteService, { useClass: BeidouSatellite }],
   [IMapService, {
     useFactory: (satellites: ISatelliteService[]) => new MapService(satellites),
-    deps: [new Many(), ISatelliteService]
+    deps: [[new Many(), ISatelliteService]]
   }]
 ]
 ```

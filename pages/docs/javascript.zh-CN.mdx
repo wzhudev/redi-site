@@ -1,0 +1,29 @@
+# 在 JavaScript (ES6+) 当中使用
+
+即使你没有使用 TypeScript，仍然可以使用 redi。
+
+redi 对于 TypeScript 的语法依赖仅限于装饰器，而装饰器仅被用于在类上声明依赖关系。JavaScript 没有装饰器，作为替代，你可以使用 `setDependencies`：
+
+在 TypeScript 中的这样一段代码：
+
+```ts
+class MapService {
+  constructor(
+    @SkipSelf() @ISatelliteService private readonly satellite: ISatelliteService
+  ) {}
+}
+```
+
+等价于 JavaScript 中这样一段代码：
+
+```js
+class MapService {
+  constructor(satellite) {
+    this.satellite = satellite
+  }
+}
+
+setDependencies(MapService, [[new SkipSelf(), ISatelliteService]])
+```
+
+可以看到，此时声明依赖的语法和对工厂函数声明依赖的语法是一致的。
