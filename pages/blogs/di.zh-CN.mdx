@@ -318,7 +318,7 @@ export class AuthService {
 }
 
 export class FileService {
-  constructor(@Inject(FileService) private readonly authService: AuthService) {}
+  constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   public changeFile(file) {
     if (file.locked) {
