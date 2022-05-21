@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 
 export default {
-  github: 'https://github.com/wendellhu95/redi',
-  docsRepositoryBase: 'https://github.com/wendellhu95/redi-site/tree/main',
+  github: 'https://github.com/hullis/redi',
+  docsRepositoryBase: 'https://github.com/hullis/redi-site/tree/main',
   titleSuffix: ' – redi',
   floatTOC: true,
   logo: () => {
