@@ -6,6 +6,7 @@
   "binding": "绑定",
   "relationship": "依赖关系",
   "injector": "注入器",
+  "with-new": "每次注入都构建新实例",
   "hierarchy": "层次依赖注入系统",
   "react": "在 React 中使用",
   "env": "设置开发环境",
