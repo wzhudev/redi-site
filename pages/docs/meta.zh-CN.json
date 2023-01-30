@@ -8,6 +8,7 @@
   "injector": "注入器",
   "with-new": "每次注入都构建新实例",
   "hierarchy": "层次依赖注入系统",
+  "forwardref": "forwardRef",
   "react": "在 React 中使用",
   "env": "设置开发环境",
   "javascript": "在 JavaScript 中使用"

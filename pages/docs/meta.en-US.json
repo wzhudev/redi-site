@@ -6,5 +6,6 @@
   "relationship": "Dependency relationship",
   "injector": "Injector",
   "hierarchy": "Hierarchy injection system",
+  "forwardref": "forwardRef",
   "react": "Using in React"
 }
