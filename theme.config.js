@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 
 export default {
-  github: 'https://github.com/hullis/redi',
-  docsRepositoryBase: 'https://github.com/hullis/redi-site/tree/main',
+  github: 'https://github.com/wzhudev/redi',
+  docsRepositoryBase: 'https://github.com/wzhudev/redi-site/tree/main',
   titleSuffix: ' – redi',
   floatTOC: true,
   logo: () => {
@@ -83,10 +83,10 @@ export default {
         return "Edit this page on GitHub";
     }
   },
-  footerText: <>MIT {new Date().getFullYear()} © Wendell Hu.</>,
+  footerText: <>MIT {new Date().getFullYear()} © wzhudev.</>,
   unstable_faviconGlyph: '👋',
   i18n: [
-    // { locale: "en-US", text: "English" },
+    { locale: "en-US", text: "English" },
     { locale: "zh-CN", text: "简体中文" },
   ],
 }

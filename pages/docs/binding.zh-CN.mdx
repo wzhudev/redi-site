@@ -10,7 +10,7 @@
 
 ## 作为注入器构造函数的参数
 
-注入器 `Injector` 构造函数的第一个参数就是一 组绑定，你在之前的小节中看到过大量这样的代码：
+注入器 `Injector` 构造函数的第一个参数就是一组绑定，你在之前的小节中看到过大量这样的代码：
 
 ```ts
 const injector = new Injector([
@@ -25,9 +25,9 @@ const injector = new Injector([
 ## 调用注入器的 `add` 方法
 
 ```ts
-injector.add(SomeClass)
+injector.add([SomeClass])
 injector.add([IdentifierA, { useClass: SomeClass }])
-injector.add(IdentifierB, { useValue: SomeValue })
+injector.add([IdentifierB, { useValue: SomeValue }])
 ```
 
 这种方式更为灵活，因为它不会限制你在什么时候注册绑定，但这种绑定可能是双刃剑，当你通过注入器获取依赖时，它可能没有来得及被注册。因此我们推荐优先使用第一种方法，除非你能够确保正确的注册和获取的先后顺序，才使用第二种。

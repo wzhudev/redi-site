@@ -3,9 +3,15 @@
   "concepts": "Concepts",
   "identifier": "Identifier",
   "item": "Dependency item",
-  "relationship": "Dependency relationship",
+  "hook": "Hooks",
+  "binding": "Binding",
+  "relationship": "Dependency Relationship",
   "injector": "Injector",
-  "hierarchy": "Hierarchy injection system",
+  "with-new": "With New Decorator",
+  "hierarchy": "Hierarchy Injection System",
   "forwardref": "forwardRef",
-  "react": "Using in React"
+  "react": "Using in React",
+  "env": "Setup Dev Environment",
+  "javascript": "Use with JavaScript & Babel",
+  "debug": "Debug"
 }

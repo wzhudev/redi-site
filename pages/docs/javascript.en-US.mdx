@@ -1,0 +1,30 @@
+# Using in JavaScript (ES5+)
+
+Even if you are not using TypeScript, you can still use redi.
+
+redi's syntax dependency in TypeScript is limited to decorators, which are only used to declare dependencies on classes. JavaScript does not have decorators, so instead you can use `setDependencies`:
+
+In TypeScript, you would have code like this:
+
+```ts
+class MapService {
+  constructor(
+    @SkipSelf() @ISatelliteService private readonly satellite: ISatelliteService
+  ) {}
+}
+```
+
+The equivalent code in JavaScript would be:
+
+```js
+class MapService {
+  constructor(satellite) {
+    this.satellite = satellite
+  }
+}
+
+setDependencies(MapService, [[new SkipSelf(), ISatelliteService]])
+```
+
+As you can see, the syntax for declaring dependencies is consistent with declaring dependencies on factory functions.
+

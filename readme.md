@@ -1,7 +1,8 @@
 # [redi website](https://redi.wendell.fun)
 
-The official website for [redi](https://github.com/hullis/redi).
+The official website of [redi](https://github.com/wzhudev/redi) - a dependency injection library for TypeScript / JavaScript.
 
 ## License
 
-MIT. Copyright Wendell Hu, 2021.
+MIT. Copyright wzhudev, 2021-2023
+
