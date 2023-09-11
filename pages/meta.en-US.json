@@ -8,5 +8,9 @@
   "docs": {
     "title": "Docs",
     "type": "nav"
+  },
+  "blogs": {
+    "title": "Blogs",
+    "type": "nav"
   }
 }
