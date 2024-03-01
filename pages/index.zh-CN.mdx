@@ -1,5 +1,4 @@
-import Bleed from 'nextra-theme-docs/bleed'
-import Callout from 'nextra-theme-docs/callout'
+import { Callout } from 'nextra/components'
 
 # redi
 
@@ -7,20 +6,19 @@ import Callout from 'nextra-theme-docs/callout'
   <img
     alt="stars"
     src="https://badgen.net/github/stars/wzhudev/redi"
-    className="inline-block mr-2"
+    style={{ display: 'inline-block', marginRight: '0.5rem' }}
   />
   <img
     alt="downloads"
     src="https://badgen.net/npm/dt/@wendellhu/redi"
-    className="inline-block mr-2"
+    style={{ display: 'inline-block', marginRight: '0.5rem' }}
   />
   <img
     alt="license"
     src="https://badgen.net/github/license/wzhudev/redi"
-    className="inline-block mr-2"
+    style={{ display: 'inline-block' }}
   />
 </p>
-
 
 **redi** (发音为 'ready'）是 TypeScript 的依赖注入库，另外提供了一组 React 绑定。借助依赖注入模式，写出更少耦合、更易调整、更易维护的代码。
 

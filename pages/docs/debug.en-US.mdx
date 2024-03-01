@@ -1,4 +1,4 @@
-import Callout from 'nextra-theme-docs/callout'
+import { Callout } from 'nextra/components'
 
 # Debug
 
@@ -20,27 +20,29 @@ redi use `Symbol` and `instanceof` internally. So things may not work when you i
 1. Contact the maintainer of these dependencies and ask them set `@wendellhu/redi` as an external dependency and add it into `peerDependencies` instead of `dependencies`.
 2. Use the same version of redi across your monorepo.
 
-## Could not find dependency registered on...
+## It seems that you register "undefined"...
 
 <Callout>
-Could not find dependency registered on the N (indexed) parameter of the constructor of XXX.
+[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef". For more info please visit our website https://redi.wendell.fun/docs/debug#could-not-find-dependency-registered-on
 </Callout>
 
-This errors happens when redi is trying to figure out what dependencies XXX relies on but a dependency is resolved to `undefined`.
+This errors happens when redi is trying to figure out what dependencies `XXX` relies on but a dependency is resolved to `undefined`.
 
-1. `XXX` is a class type dependency
-2. Due to how TypeScript is transpiled into JavaScript. XXX is declared first and later assigned to the constructor function of `XXX`.
-3. There is cycle dependency among your TypeScript files that leads to `XXX` being evaluated as `undefined` when `Inject` decorator is trying to register `XXX` as a dependency on the consumer.
+Let's assume that the dependency resolved to `undefined` is `YYY`.
+
+1. `YYY` must be a class type dependency.
+2. Due to how TypeScript is transpiled into JavaScript. `YYY` is declared first and later assigned to the constructor function of `YYY`.
+3. There is cycle dependency among your TypeScript files that leads to `YYY` being evaluated as `undefined` when `Inject` decorator is trying to register `YYY` as a dependency on `XXX`.
 
 To fix this problem, you can use `forwardRef`
 
 ```ts
 import { Inject, forwardRef } from '@wendellhu/redi'
 
-class Consumer {
-    constructor(@Inject(forwardRef(() => XXX)) private readonly _xxx: XXX) {}
+class XXX {
+    constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
 }
 
 ```
 
-... or fix cycle dependency in your codebase.
+... or fix cycle dependency in your codebase. We recommend using [bnpm](https://www.npmjs.com/package/dpdm) to find cycle dependency in your codebase. You could traverse the dependency tree staring from the file that contains `XXX`, and break cycles those contains the file.

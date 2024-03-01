@@ -2,15 +2,14 @@
 {
   "index": {
     "title": "Introduction",
-    "type": "nav",
-    "hidden": true
+    "type": "page"
   },
   "docs": {
-    "title": "Docs",
-    "type": "nav"
+    "title": "Guides",
+    "type": "page"
   },
   "blogs": {
     "title": "Blogs",
-    "type": "nav"
+    "type": "page"
   }
 }

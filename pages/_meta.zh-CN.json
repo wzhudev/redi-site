@@ -1,15 +1,14 @@
 {
   "index": {
     "title": "简介",
-    "type": "nav",
-    "hidden": true
+    "type": "page"
   },
   "docs": {
     "title": "文档",
-    "type": "nav"
+    "type": "page"
   },
   "blogs": {
     "title": "博客",
-    "type": "nav"
+    "type": "page"
   }
 }

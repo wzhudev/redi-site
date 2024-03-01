@@ -1,3 +1,50 @@
-# 问题排查
+import { Callout } from 'nextra/components'
 
- ## Import scripts of redi more than once
+# 排查问题
+
+## You are loading scripts of redi more than once...
+
+<Callout>
+[redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
+Maybe your dependencies added redi as its dependency and bundled redi to its dist files. Or you import different versions of redi.
+For more info please visit our website: https://redi.wendell.fun/en-US/docs/debug#import-scripts-of-redi-more-than-once
+</Callout>
+
+这个错误的含义是你加载了多次 redi 的代码。这个错误的原因可能是以下其中一种：
+
+1. 你引入的依赖也依赖了 `@wendellhu/redi`，但是它们没有将 redi 设置为 peer dependency，而是将 redi 打包到了它们的 dist 文件中。
+2. 你在一个 monorepo 中工作，而不同的包使用了不同的 redi 版本。
+
+redi use `Symbol` and `instanceof` internally. So things may not work when you import redi more than once. To fix this problem:
+
+redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 redi 的代码时，可能会导致一些问题。为了解决这个问题：
+
+1. 联系这些依赖的维护者，让他们将 `@wendellhu/redi` 设置为外部依赖，并将它添加到 `peerDependencies` 而不是 `dependencies` 中。
+2. 在你的 monorepo 中使用相同的 redi 版本。
+
+## It seems that you register "undefined"...
+
+<Callout>
+[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef". For more info please visit our website https://redi.wendell.fun/docs/debug#could-not-find-dependency-registered-on
+</Callout>
+
+当 redi 试图弄清楚某个类 `XXX` 依赖于哪些依赖项时，发现某个依赖项被解析为 `undefined`，就会抛出这个错误。发生这个错误的原因大致如下：
+
+我们假设这个依赖项是 `YYY`，
+
+1. `YYY` 一定是一个类
+2. tsc 编译 TypeScript 到 JavaScript 时，`YYY` 标识符先被声明，稍后才会被赋值上 `YYY` 的构造函数
+3. 在 TypeScript 直接存在循环依赖，导致当 `Inject` 装饰器视图在 `XXX` 上记录依赖关系时，`YYY` 还没有被赋值
+
+为了解决这个问题，你可以使用 `forwardRef`，这会导致对 `YYY` 的取值过程延后到构建 `XXX` 的实例时，从而避免这个问题：
+
+```ts
+import { Inject, forwardRef } from '@wendellhu/redi'
+
+class XXX {
+    constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
+}
+
+```
+
+更加推荐的做法是接触文件之间的循环依赖。推荐使用 [bnpm](https://www.npmjs.com/package/dpdm) 来查找文件直接的依赖关系。你可以从  `XXX` 所在文件开始遍历依赖关系，然后把包含这个文件的循环依赖打破。
