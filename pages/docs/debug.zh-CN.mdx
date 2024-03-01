@@ -7,15 +7,12 @@ import { Callout } from 'nextra/components'
 <Callout>
 [redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
 Maybe your dependencies added redi as its dependency and bundled redi to its dist files. Or you import different versions of redi.
-For more info please visit our website: https://redi.wendell.fun/en-US/docs/debug#import-scripts-of-redi-more-than-once
 </Callout>
 
 这个错误的含义是你加载了多次 redi 的代码。这个错误的原因可能是以下其中一种：
 
 1. 你引入的依赖也依赖了 `@wendellhu/redi`，但是它们没有将 redi 设置为 peer dependency，而是将 redi 打包到了它们的 dist 文件中。
 2. 你在一个 monorepo 中工作，而不同的包使用了不同的 redi 版本。
-
-redi use `Symbol` and `instanceof` internally. So things may not work when you import redi more than once. To fix this problem:
 
 redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 redi 的代码时，可能会导致一些问题。为了解决这个问题：
 
@@ -25,7 +22,7 @@ redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 
 ## Could not find dependency registered on
 
 <Callout>
-[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef". For more info please visit our website https://redi.wendell.fun/docs/debug#could-not-find-dependency-registered-on
+[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef".
 </Callout>
 
 当 redi 试图弄清楚某个类 `XXX` 依赖于哪些依赖项时，发现某个依赖项被解析为 `undefined`，就会抛出这个错误。发生这个错误的原因大致如下：
