@@ -2,7 +2,7 @@ import { Callout } from 'nextra/components'
 
 # 排查问题
 
-## You are loading scripts of redi more than once...
+## Import scripts of redi more than once
 
 <Callout>
 [redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
@@ -22,7 +22,7 @@ redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 
 1. 联系这些依赖的维护者，让他们将 `@wendellhu/redi` 设置为外部依赖，并将它添加到 `peerDependencies` 而不是 `dependencies` 中。
 2. 在你的 monorepo 中使用相同的 redi 版本。
 
-## It seems that you register "undefined"...
+## Could not find dependency registered on
 
 <Callout>
 [redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef". For more info please visit our website https://redi.wendell.fun/docs/debug#could-not-find-dependency-registered-on
@@ -47,4 +47,4 @@ class XXX {
 
 ```
 
-更加推荐的做法是接触文件之间的循环依赖。推荐使用 [bnpm](https://www.npmjs.com/package/dpdm) 来查找文件直接的依赖关系。你可以从  `XXX` 所在文件开始遍历依赖关系，然后把包含这个文件的循环依赖打破。
+更加推荐的做法是解除文件之间的循环依赖。推荐使用 [bnpm](https://www.npmjs.com/package/dpdm) 来查找文件直接的依赖关系。你可以从  `XXX` 所在文件开始遍历依赖关系，然后把包含这个文件的循环依赖打破。

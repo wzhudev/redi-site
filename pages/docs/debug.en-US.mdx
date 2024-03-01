@@ -2,7 +2,7 @@ import { Callout } from 'nextra/components'
 
 # Debug
 
-## You are loading scripts of redi more than once...
+## Import scripts of redi more than once
 
 <Callout>
 [redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
@@ -20,7 +20,7 @@ redi use `Symbol` and `instanceof` internally. So things may not work when you i
 1. Contact the maintainer of these dependencies and ask them set `@wendellhu/redi` as an external dependency and add it into `peerDependencies` instead of `dependencies`.
 2. Use the same version of redi across your monorepo.
 
-## It seems that you register "undefined"...
+## Could not find dependency registered on
 
 <Callout>
 [redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef". For more info please visit our website https://redi.wendell.fun/docs/debug#could-not-find-dependency-registered-on
