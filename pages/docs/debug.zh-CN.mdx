@@ -31,7 +31,7 @@ redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 
 
 1. `YYY` 一定是一个类
 2. tsc 编译 TypeScript 到 JavaScript 时，`YYY` 标识符先被声明，稍后才会被赋值上 `YYY` 的构造函数
-3. 在 TypeScript 直接存在循环依赖，导致当 `Inject` 装饰器视图在 `XXX` 上记录依赖关系时，`YYY` 还没有被赋值
+3. 在 TypeScript 文件之间存在循环依赖，导致当 `Inject` 装饰器视图在 `XXX` 上记录依赖关系时，`YYY` 还没有被赋值
 
 为了解决这个问题，你可以使用 `forwardRef`，这会导致对 `YYY` 的取值过程延后到构建 `XXX` 的实例时，从而避免这个问题：
 
