@@ -4,5 +4,5 @@ The official website of [redi](https://github.com/wzhudev/redi) - a dependency i
 
 ## License
 
-MIT. Copyright wzhudev, 2021-2023
+MIT. Copyright wzhudev, 2021-2024
 

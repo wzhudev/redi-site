@@ -3,6 +3,11 @@ export default {
   project: {
     link: 'https://github.com/wzhudev/redi',
   },
+  useNextSeoProps() {
+    return {
+      titleTemplate: '%s – Redi'
+    }
+  },
   logo: (
     <>
       <span style={{ marginLeft: '.4em', fontWeight: 800 }}>Redi</span>
