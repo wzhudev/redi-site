@@ -65,31 +65,6 @@ class MobileClipboardInterfaceService implements IClipboardInterfaceService {
 const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
 ```
 
-
-然后在提供该接口对应的依赖时，我们可以在不同的运行环境中通过这个接口注入不同的类。例如在浏览器中可以注入针对原生浏览器 API 的实现：
-
-```ts highlight=1, 7
-class WebClipboardInterfaceService implements IClipboardInterfaceService {
-  readText() {
-    return navigator.clipboard.readText();
-  }
-}
-
-const injector = new Injector([[IClipboardInterface, { useClass: WebClipboardInterfaceService }]])
-```
-
-在移动端环境中使用 bridge 来实现：
-
-```ts highlight=1, 7
-class MobileClipboardInterfaceService implements IClipboardInterfaceService {
-  readText() {
-    return window.bridge.readText();
-  }
-}
-
-const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
-```
-
 对于 `IClipboardInterfaceService` 的使用方，只需要依赖于这个接口，而不需要关心具体的实现：
 
 ```ts
