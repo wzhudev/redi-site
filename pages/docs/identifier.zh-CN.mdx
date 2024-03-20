@@ -27,22 +27,75 @@ const classDependency = injector.get(ClassDependency)
 
 ## `createIdentifier`
 
-更推荐的做法是通过 `createIdentifier` 方法创建标识符，该标识符的类型是 `IdentifierDecorator`。在下面这个例子中，我们创建了一个名为 `IPlatformService` 的标识符，然后在提供该标识符对应的依赖时，选择具体的类 `PcPlatformService`：
+更推荐的做法是通过 `createIdentifier` 方法创建标识符，样可以让一个模块依赖一个接口，而不是一个具体的类。
 
-```ts highlight=4-6
-interface IPlatformService {
-  getUniqID(): string
+例如，我们的代码需要依赖剪贴板服务从系统剪贴板里获取数据，我们可以创建一个接口 `IClipboardInterfaceService`，以及对应的标识符：
+
+```ts highlight=1, 5
+export interface IClipboardInterfaceService{
+  readText(): string | undefined;
 }
-const IPlatformService = createIdentifier<IPlatformService>('platform')
-class PcPlatformService implements IPlatformService {}
-const injector = new Injector([[IPlatformService, { useClass: PcPlatformService }]])
 
-const platformIns = injector.get(IPlatformService)
+export const IClipboardInterfaceService = createIdentifier<IClipboardInterfaceService>('clipboard-interface');
 ```
 
-使用这种方法的好处包括：
+<Callout>在 TypeScript 当中，类型变量和值变量使用不同的命名空间，所以一个接口和一个值有完全相同的名称 `IClipboardInterfaceService` 是合法的，这个小技巧能够将接口和标识符结合起来，降低开发者的心智负担。</Callout>
 
-* 符合[依赖倒置](https://zh.wikipedia.org/wiki/%E4%BE%9D%E8%B5%96%E5%8F%8D%E8%BD%AC%E5%8E%9F%E5%88%99)原则，这样当你需要更改 IPlatformService 的实现时，就不必更改其他的依赖项
-* 标识符可以用作装饰器来声明依赖项之间的依赖关系
+然后在提供该接口对应的依赖时，我们可以在不同的运行环境中通过这个接口注入不同的类。例如在浏览器中可以注入针对原生浏览器 API 的实现：
 
-<Callout>在 TypeScript 当中，类型变量和值变量使用不同的命名空间，所以一个接口和一个值有完全相同的名称 `IPlatformService` 是合法的，这个小技巧能够将接口和标识符结合起来，降低开发者的心智负担。</Callout>
+```ts highlight=1, 7
+class WebClipboardInterfaceService implements IClipboardInterfaceService {
+  readText() {
+    return navigator.clipboard.readText();
+  }
+}
+
+const injector = new Injector([[IClipboardInterface, { useClass: WebClipboardInterfaceService }]])
+```
+
+在移动端环境中使用 bridge 来实现：
+
+```ts highlight=1, 7
+class MobileClipboardInterfaceService implements IClipboardInterfaceService {
+  readText() {
+    return window.bridge.readText();
+  }
+}
+
+const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
+```
+
+
+然后在提供该接口对应的依赖时，我们可以在不同的运行环境中通过这个接口注入不同的类。例如在浏览器中可以注入针对原生浏览器 API 的实现：
+
+```ts highlight=1, 7
+class WebClipboardInterfaceService implements IClipboardInterfaceService {
+  readText() {
+    return navigator.clipboard.readText();
+  }
+}
+
+const injector = new Injector([[IClipboardInterface, { useClass: WebClipboardInterfaceService }]])
+```
+
+在移动端环境中使用 bridge 来实现：
+
+```ts highlight=1, 7
+class MobileClipboardInterfaceService implements IClipboardInterfaceService {
+  readText() {
+    return window.bridge.readText();
+  }
+}
+
+const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
+```
+
+对于 `IClipboardInterfaceService` 的使用方，只需要依赖于这个接口，而不需要关心具体的实现：
+
+```ts
+injector.get(IClipboardInterfaceService).readText();
+```
+
+<Callout>如果你的应用支持多端，你应该会给不同端的资源设置不同的 bundle。请确保在不同的 bundle 内分别注入对应的实现。</Callout>
+
+通过这样的方式，你可以在不同的环境中切换实现，而不需要修改使用方的代码。
