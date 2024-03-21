@@ -11,6 +11,7 @@
   "author": "Wenzhao Hu <wzhudev@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@vercel/analytics": "^1.2.2",
     "next": "^13.0.6",
     "nextra": "latest",
     "nextra-theme-docs": "latest",
