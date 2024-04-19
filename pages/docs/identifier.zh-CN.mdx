@@ -50,7 +50,7 @@ class WebClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterface, { useClass: WebClipboardInterfaceService }]])
+const injector = new Injector([[IClipboardInterfaceService, { useClass: WebClipboardInterfaceService }]])
 ```
 
 在移动端环境中使用 bridge 来实现：
@@ -62,7 +62,7 @@ class MobileClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
+const injector = new Injector([[IClipboardInterfaceService, { useClass: MobileClipboardInterfaceService }]])
 ```
 
 对于 `IClipboardInterfaceService` 的使用方，只需要依赖于这个接口，而不需要关心具体的实现：
