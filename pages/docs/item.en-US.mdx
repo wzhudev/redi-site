@@ -140,6 +140,39 @@ const injector = new Injector([
 ]
 ```
 
+## Existing item
+
+You could use an existing dependency item as a dependency item. In another word, you can give an existing dependency item an alias. In this case, the dependency item is an object that implements `ExistingDependencyItem`:
+
+```ts
+export interface ExistingDependencyItem<T> {
+  useExisting: DependencyIdentifier<T>
+}
+```
+
+An example:
+
+```ts
+interface IHttpInterceptor {
+  intercept(): void
+}
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
+
+class AuthHttpInterceptor implements IHttpInterceptor {
+  intercept(): void {}
+}
+
+const INetworkInterceptor = createIdentifier<IHttpInterceptor>('network-interceptor')
+
+const injector = new Injector([
+  [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
+  [INetworkInterceptor, { useExisting: IHttpInterceptor }],
+])
+
+console.log(injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor)) // true
+```
+
+
 ## Async item
 
 Sometimes it is not necessary to get a dependency in a synchronous way. You could use Async Item and `import` function of webpack to lazy load a dependency. To do that, you should provide an object that implements the following interface:

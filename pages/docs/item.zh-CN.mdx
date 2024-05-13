@@ -34,6 +34,7 @@ export interface ClassDependencyItem<T> {
 interface IHttpInterceptor {
   intercept(): void
 }
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
 
 class AuthHttpInterceptor implements IHttpInterceptor {
   intercept(): void {}
@@ -129,6 +130,38 @@ const injector = new Injector([
     },
   ],
 ]
+```
+
+## 已存在的依赖项
+
+有时候你可能需要使用已经存在的依赖项，换句话说，你想要给一个依赖项以别名，这时候你可以使用 `ExistingDependencyItem`，它的接口如下所示：
+
+```ts
+export interface ExistingDependencyItem<T> {
+  useExisting: DependencyIdentifier<T>
+}
+```
+
+例子：
+
+```ts
+interface IHttpInterceptor {
+  intercept(): void
+}
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
+
+class AuthHttpInterceptor implements IHttpInterceptor {
+  intercept(): void {}
+}
+
+const INetworkInterceptor = createIdentifier<IHttpInterceptor>('network-interceptor')
+
+const injector = new Injector([
+  [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
+  [INetworkInterceptor, { useExisting: IHttpInterceptor }],
+])
+
+console.log(injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor)) // true
 ```
 
 ## 异步依赖项
