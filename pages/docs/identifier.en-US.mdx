@@ -47,7 +47,7 @@ class WebClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterface, { useClass: WebClipboardInterfaceService }]])
+const injector = new Injector([[IClipboardInterfaceService, { useClass: WebClipboardInterfaceService }]])
 ```
 
 And use a bridge to implement in the mobile environment:
@@ -59,7 +59,7 @@ class MobileClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterface, { useClass: MobileClipboardInterfaceService }]])
+const injector = new Injector([[IClipboardInterfaceService, { useClass: MobileClipboardInterfaceService }]])
 ```
 
 Then you can get the dependency by the identifier:
