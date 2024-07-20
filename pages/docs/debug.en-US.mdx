@@ -11,13 +11,15 @@ Maybe your dependencies added redi as its dependency and bundled redi to its dis
 
 This error happens when you import scripts of redi more than once. This usually happens when
 
-1. Some dependencies in your workspace use `@wendellhu/redi` as well. However, they don't use redi as a peer dependency and avoid bundling redi.
-2. You are working on a monorepo and packages uses different versions of redi.
+1. Some dependency in your workspace uses redi as well. However, it don't declare redi as an external dependency.
+2. Some dependency in your project uses a different version of redi from yours.
+3. You are working on a monorepo and repos uses different versions of redi.
 
 redi use `Symbol` and `instanceof` internally. So things may not work when you import redi more than once. To fix this problem:
 
-1. Contact the maintainer of these dependencies and ask them set `@wendellhu/redi` as an external dependency and add it into `peerDependencies` instead of `dependencies`.
-2. Use the same version of redi across your monorepo.
+1. Contact the maintainer of these dependencies and ask them set redi as an external dependency.
+2. The dependency may re-exports API of redi. In such case you should use these re-exported API instead of using redi directly.
+3. Use the same version of redi across your monorepo.
 
 ## Could not find dependency registered on
 

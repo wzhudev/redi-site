@@ -11,13 +11,17 @@ Maybe your dependencies added redi as its dependency and bundled redi to its dis
 
 这个错误的含义是你加载了多次 redi 的代码。这个错误的原因可能是以下其中一种：
 
-1. 你引入的依赖也依赖了 `@wendellhu/redi`，但是它们没有将 redi 设置为 peer dependency，而是将 redi 打包到了它们的 dist 文件中。
-2. 你在一个 monorepo 中工作，而不同的包使用了不同的 redi 版本。
+1. 你引入的包也依赖了 `@wendellhu/redi`，但是它们没有将 redi 设置为外部依赖，而是将 redi 打包到了它们的 dist 文件中
+2. 你引入的包依赖的 `@wendellhu/redi` 和你自己安装的 `redi` 版本不一致
+3. 你在一个 monorepo 中工作，repo 使用了不同版本的 redi
 
-redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 redi 的代码时，可能会导致一些问题。为了解决这个问题：
+redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 redi 的代码时，redi 会无法正常运行。
 
-1. 联系这些依赖的维护者，让他们将 `@wendellhu/redi` 设置为外部依赖，并将它添加到 `peerDependencies` 而不是 `dependencies` 中。
-2. 在你的 monorepo 中使用相同的 redi 版本。
+为了解决这个问题，你可以采取以下办法：
+
+1. 联系这些包的维护者，让他们将 `@wendellhu/redi` 设置为外部依赖
+2. 这些包的维护者可能重新导出了 redi 的 API，这种情况下请使用这些 API 而不要直接使用 redi
+3. 在你的 monorepo 中使用相同的 redi 版本
 
 ## Could not find dependency registered on
 
