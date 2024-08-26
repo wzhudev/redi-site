@@ -32,8 +32,8 @@ export default {
     text: (
       <span>
         MIT {new Date().getFullYear()} ©{' '}
-        <a href="https://github/wzhudev" target="_blank">
-           Wenzhao Hu 
+        <a href="https://wzhu.dev" target="_blank">
+           wzhudev
         </a>
         .
       </span>
