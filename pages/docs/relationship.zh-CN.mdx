@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # 依赖关系
 
@@ -6,8 +6,8 @@ import { Callout } from 'nextra/components'
 
 有两种依赖项需要声明依赖关系：
 
-* 类依赖项
-* 工厂函数依赖项
+- 类依赖项
+- 工厂函数依赖项
 
 ## 在类依赖项上声明依赖关系
 
@@ -16,7 +16,7 @@ import { Callout } from 'nextra/components'
 ```ts highlight=3
 class MapService {
   constructor(
-    @Inject(SatelliteService) private readonly satellite: SatelliteService
+    @Inject(SatelliteService) private readonly satellite: SatelliteService,
   ) {}
 }
 ```
@@ -26,11 +26,11 @@ class MapService {
 ```ts highlight=7
 interface IPlatformService {}
 
-const IPlatformService = createIdentifier<IPlatformService>('platform')
+const IPlatformService = createIdentifier<IPlatformService>("platform");
 
 class DialogService {
   constructor(
-    @IPlatformService private readonly platformSrc: IPlatformService
+    @IPlatformService private readonly platformSrc: IPlatformService,
   ) {}
 }
 ```
@@ -42,12 +42,12 @@ class DialogService {
 ```ts highlight=3,8
 class MapService {
   constructor(
-    @Inject(SatelliteService) private readonly satellite: SatelliteService
+    @Inject(SatelliteService) private readonly satellite: SatelliteService,
   ) {}
 }
 
-const injector = new Injector([[MapService]])
-injector.get(MapService) // ERROR
+const injector = new Injector([[MapService]]);
+injector.get(MapService); // ERROR
 ```
 
 有时候，你会想在无法获取到一个依赖时仍然能够继续实例化过程（特别是在代码作为 SDK 给其他开发者使用时），此时你应当将 `Inject` 替换为 `Optional` 来标记这个依赖是可选的：
@@ -55,12 +55,12 @@ injector.get(MapService) // ERROR
 ```ts highlight=3,8
 class MapService {
   constructor(
-    @Optional(SatelliteService) private readonly satellite?: SatelliteService
+    @Optional(SatelliteService) private readonly satellite?: SatelliteService,
   ) {}
 }
 
-const injector = new Injector([MapService])
-injector.get(MapService)
+const injector = new Injector([MapService]);
+injector.get(MapService);
 ```
 
 即使 `SatelliteService` 未被提供，`MapService` 仍可以实例化，只是 `satellite` 属性为 `undefined` 而已。
@@ -72,7 +72,7 @@ injector.get(MapService)
 ```ts highlight=3,9-10
 class MapService {
   constructor(
-    @Many(ISatelliteService) private readonly satellites: ISatelliteService[]
+    @Many(ISatelliteService) private readonly satellites: ISatelliteService[],
   ) {}
 }
 
@@ -80,8 +80,8 @@ const injector = new Injector([
   [MapService],
   [ISatelliteService, { useClass: GPSSatellite }],
   [ISatelliteService, { useClass: BeidouSatellite }],
-])
-injector.get(MapService)
+]);
+injector.get(MapService);
 ```
 
 ## 在工厂函数依赖项上声明依赖关系
@@ -95,11 +95,11 @@ const item = [
     useFactory: (i18nService: I18NService) => {
       return i18nService.isChinese()
         ? new ChineseNumberTranspiler()
-        : new EnglishNumberTranspiler()
+        : new EnglishNumberTranspiler();
     },
     deps: [[I18NService]],
   },
-]
+];
 ```
 
 工厂函数一样可以声明可选依赖和多值依赖，只是语法会稍有不同：
@@ -108,10 +108,13 @@ const item = [
 const item = [
   [ISatelliteService, { useClass: GPSSatellite }],
   [ISatelliteService, { useClass: BeidouSatellite }],
-  [IMapService, {
-    useFactory: (satellites: ISatelliteService[]) => new MapService(satellites),
-    deps: [[new Many(), ISatelliteService]]
-  }]
-]
+  [
+    IMapService,
+    {
+      useFactory: (satellites: ISatelliteService[]) =>
+        new MapService(satellites),
+      deps: [[new Many(), ISatelliteService]],
+    },
+  ],
+];
 ```
-

@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Dependency Item
 
@@ -9,15 +9,15 @@ Class could be a dependency item directly and registered in an injector. In this
 ```ts
 class AuthService {}
 
-const injector = new Injector([[AuthService]])
+const injector = new Injector([[AuthService]]);
 ```
 
 You could also use an `IdentifierDecorator` as identifier. In this case, the dependency item is an object that implements `ClassDependencyItem`:
 
 ```ts
 export interface ClassDependencyItem<T> {
-  useClass: Ctor<T>
-  lazy?: boolean
+  useClass: Ctor<T>;
+  lazy?: boolean;
 }
 ```
 
@@ -26,13 +26,13 @@ An example:
 ```ts
 interface IAuthService {}
 
-const IAuthService = createIdentifier<IAuthService>('auth')
+const IAuthService = createIdentifier<IAuthService>("auth");
 
 class AuthService implements IAuthService {}
 
 const injector = new Injector([
   [IAuthService, { useClass: AuthService, lazy: true }],
-])
+]);
 ```
 
 ### Lazy instantiation
@@ -41,7 +41,7 @@ You could set `true` to indicate the inject not to instantiate the dependency it
 
 ```ts highlight=21
 interface IHttpInterceptor {
-  intercept(): void
+  intercept(): void;
 }
 
 class AuthHttpInterceptor implements IHttpInterceptor {
@@ -50,36 +50,37 @@ class AuthHttpInterceptor implements IHttpInterceptor {
 
 class FileListService {
   constructor(
-    @Inject(IHttpInterceptor) private readonly httpI: IHttpInterceptor
+    @Inject(IHttpInterceptor) private readonly httpI: IHttpInterceptor,
   ) {}
 
   request() {
-    this.httIp.intercept()
+    this.httIp.intercept();
   }
 }
 
 const injector = new Injector([
   [FileListService],
   [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
-])
+]);
 ```
 
-In this case, `FileListService` depends on `AuthHttpInterceptor`. When you get `FileListService` it would be constructed but nor `AuthHttpInterceptor`. 
+In this case, `FileListService` depends on `AuthHttpInterceptor`. When you get `FileListService` it would be constructed but nor `AuthHttpInterceptor`.
 
 ```ts
-const fileListService = injector.get(FileListService)
+const fileListService = injector.get(FileListService);
 ```
 
 When you access `intercept` of `AuthHttpInterceptor` it would be constructed:
 
 ```ts
-fileListService.request()
+fileListService.request();
 ```
 
 By postponing instantiation of some dependencies, start-up performance could get optimized.
 
 <Callout>
-  Please be careful to check if there is any side effect in constructors. The application may not work as you expect in that case.
+  Please be careful to check if there is any side effect in constructors. The
+  application may not work as you expect in that case.
 </Callout>
 
 ## Value item
@@ -88,7 +89,7 @@ You could provide an object that implements `ValueDependencyItem` as a value ite
 
 ```ts
 export interface ValueDependencyItem<T> {
-  useValue: T
+  useValue: T;
 }
 ```
 
@@ -102,8 +103,8 @@ It should implements te following interface:
 
 ```ts
 export interface FactoryDependencyItem<T> {
-  useFactory: (...deps: any[]) => T
-  deps?: FactoryDep<any>[]
+  useFactory: (...deps: any[]) => T;
+  deps?: FactoryDep<any>[];
 }
 ```
 
@@ -146,7 +147,7 @@ You could use an existing dependency item as a dependency item. In another word,
 
 ```ts
 export interface ExistingDependencyItem<T> {
-  useExisting: DependencyIdentifier<T>
+  useExisting: DependencyIdentifier<T>;
 }
 ```
 
@@ -154,24 +155,27 @@ An example:
 
 ```ts
 interface IHttpInterceptor {
-  intercept(): void
+  intercept(): void;
 }
-const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>("http-interceptor");
 
 class AuthHttpInterceptor implements IHttpInterceptor {
   intercept(): void {}
 }
 
-const INetworkInterceptor = createIdentifier<IHttpInterceptor>('network-interceptor')
+const INetworkInterceptor = createIdentifier<IHttpInterceptor>(
+  "network-interceptor",
+);
 
 const injector = new Injector([
   [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
   [INetworkInterceptor, { useExisting: IHttpInterceptor }],
-])
+]);
 
-console.log(injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor)) // true
+console.log(
+  injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor),
+); // true
 ```
-
 
 ## Async item
 
@@ -181,7 +185,7 @@ Sometimes it is not necessary to get a dependency in a synchronous way. You coul
 export interface AsyncDependencyItem<T> {
   useAsync: () => Promise<
     T | Ctor<T> | [DependencyIdentifier<T>, SyncDependencyItem<T>]
-  >
+  >;
 }
 ```
 
@@ -223,6 +227,6 @@ const injector = new Injector([
 ```ts
 // reportService.ts
 export default class ReportService {
-  report(msg: string): void
+  report(msg: string): void;
 }
 ```

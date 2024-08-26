@@ -1,18 +1,18 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # forwardRef
 
 In the following example, `Person` is defined before `Father` but relies on `Father`. In this case, you should use `forwardRef` to wrap `Father`. Otherwise redi would receive `undefined` when tries to figure out dependencies of `Person` (and it would throw an error in that case).
 
 ```ts highlight=5,7
-import { Self, SkipSelf } from '@wendellhu/redi'
+import { Self, SkipSelf } from "@wendellhu/redi";
 
 class Person {
   constructor(
     @Self() @Inject(forwardRef(() => Father)) private readonly father: Father,
     @SkipSelf()
     @Inject(forwardRef(() => Father))
-    private readonly grandfather: Father
+    private readonly grandfather: Father,
   ) {}
 }
 
@@ -22,4 +22,7 @@ class Father extends Man {
 }
 ```
 
-<Callout>This is not related to redi itself but how TypeScript is transpiled into JavaScript.</Callout>
+<Callout>
+  This is not related to redi itself but how TypeScript is transpiled into
+  JavaScript.
+</Callout>

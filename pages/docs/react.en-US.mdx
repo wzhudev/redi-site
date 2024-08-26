@@ -11,23 +11,23 @@ const App = connectDependencies(
   function AppImpl() {
     //...
   },
-  [[PlatformService]]
-)
+  [[PlatformService]],
+);
 ```
 
 Component could also be connected to an injector.
 
 ```ts
-const injector = new Injector([[PlatformService]])
+const injector = new Injector([[PlatformService]]);
 
 const App = connectInjector(function AppImpl() {
   //...
-}, injector)
+}, injector);
 ```
 
 The difference between `connectDependencies` and `connectInjector` is: `connectDependencies` would always create a new injector when the connected components mounts. However, `connectInjector` would never create an injector but use the created injector.
 
-When two components that are connected to dependencies become ancestor and child components, the injectors would become parent child injector as well. 
+When two components that are connected to dependencies become ancestor and child components, the injectors would become parent child injector as well.
 
 ## Component consumes dependencies
 
@@ -35,8 +35,8 @@ Use the following Hooks to get an injector or a dependency:
 
 ```ts highlight=2,3
 function Dashboard() {
-  const injector = useInjector()
-  const platformService = useDependency(PlatformService)
+  const injector = useInjector();
+  const platformService = useDependency(PlatformService);
 }
 ```
 
@@ -44,9 +44,9 @@ Use `WithDependency` to get dependency in class components:
 
 ```tsx highlight=2
 class Dashboard extends React.Component {
-  static contextType = RediContext
+  static contextType = RediContext;
 
   @WithDependency(PlatformService)
-  private readonly platformSrv!: PlatformService
+  private readonly platformSrv!: PlatformService;
 }
 ```

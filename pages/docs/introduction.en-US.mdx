@@ -1,9 +1,10 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Getting started
 
 <Callout>
-  It is highly recommended to learn a thing or two about dependency injection before moving on.
+  It is highly recommended to learn a thing or two about dependency injection
+  before moving on.
 </Callout>
 
 ## Installation
@@ -20,7 +21,7 @@ or use other package managers such as npm:
 npm install @wendellhu/redi
 ```
 
-After installation, you should enable  `experimentalDecorators` in the tsconfig.json file:
+After installation, you should enable `experimentalDecorators` in the tsconfig.json file:
 
 ```json highlight=3
 {
@@ -45,7 +46,7 @@ class FileListService {
   constructor() {}
 
   public getUserFiles(): Promise<Files> {
-    const currentUser = AuthService.getCurrentUserInfo()
+    const currentUser = AuthService.getCurrentUserInfo();
     // ...
   }
 }
@@ -56,7 +57,7 @@ Obviously `FileListService` depends on `AuthService`. Let's see how we can make 
 **Step One. Declare dependency relationship.**
 
 ```typescript highlight=1,4,10,13
-import { Inject } from '@wendellhu/redi'
+import { Inject } from "@wendellhu/redi";
 
 class AuthService {
   public getCurrentUserInfo(): UserInfo {
@@ -68,7 +69,7 @@ class FileListService {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   public getUserFiles(): Promise<Files> {
-    const currentUser = this.authService.getCurrentUserInfo()
+    const currentUser = this.authService.getCurrentUserInfo();
     // ...
   }
 }
@@ -79,22 +80,23 @@ Use the decorator `Inject` to declare on the constructor of `FileListService` th
 **Step Two: Provide dependencies.**
 
 ```typescript
-import { Injector } from '@wendellhu/redi'
+import { Injector } from "@wendellhu/redi";
 
-const injector = new Injector([[FileListService], [AuthService]])
+const injector = new Injector([[FileListService], [AuthService]]);
 ```
+
 All your have to do is pass them into the constructor of `Injector`.
 
 **Step Three. Wire up.**
 
 ```typescript
-const fileListService = injector.get(FileListService)
+const fileListService = injector.get(FileListService);
 ```
 
 Then you get an instance of `FileListService`, and its dependency `AuthService` is also constructed and cached in the `Injector.
 
 ```typescript
-const authService = injector.get(FileListService)
+const authService = injector.get(FileListService);
 ```
 
 Read the next chapter to learn basic concepts in dependency injection.

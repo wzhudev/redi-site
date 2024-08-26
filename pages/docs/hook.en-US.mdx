@@ -13,10 +13,10 @@ const configService = [
     useClass: ConfigService,
     lazy: true,
     onInstantiation: (s: IConfigService) => {
-      s.setConfig()
+      s.setConfig();
     },
   },
-]
+];
 ```
 
 This function will be called immediately after the constructor or factory is executed. If a `ClassDependencyItem` is lazily instantiated, it will be called immediately after lazy instantiation.

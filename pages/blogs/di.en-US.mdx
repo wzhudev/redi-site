@@ -23,7 +23,7 @@ export class FindReplaceController extends RxDisposable {
       commandService,
       platformService,
       contextService,
-      layoutService
+      layoutService,
     );
   }
 }
@@ -43,13 +43,13 @@ export class FindReplaceController extends RxDisposable {
     commandService: ICommandService,
     platformService: IPlatformService,
     contextService: IContextService,
-    layoutService: ILayoutService
+    layoutService: ILayoutService,
   ) {
     this._shortcutService = new ShortcutService(
       commandService,
       platformService,
       contextService,
-      layoutService
+      layoutService,
     );
   }
 }
@@ -63,7 +63,7 @@ If we don't construct `ShortcutService` within `FindReplaceController` but inste
 export class FindReplaceController extends RxDisposable {
   constructor(
     // ...
-    private readonly _shortcutService: IShortcutService // ...
+    private readonly _shortcutService: IShortcutService, // ...
   ) {}
 }
 ```

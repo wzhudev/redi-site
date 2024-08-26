@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Dependency relationship
 
@@ -11,7 +11,7 @@ To declare dependencies of a class, you could use the `Injector` decorator:
 ```ts highlight=3
 class MapService {
   constructor(
-    @Inject(SatelliteService) private readonly satellite: SatelliteService
+    @Inject(SatelliteService) private readonly satellite: SatelliteService,
   ) {}
 }
 ```
@@ -21,11 +21,11 @@ or an `IdentifierDecorator`:
 ```ts highlight=7
 interface IPlatformService {}
 
-const IPlatformService = createIdentifier<IPlatformService>('platform')
+const IPlatformService = createIdentifier<IPlatformService>("platform");
 
 class DialogService {
   constructor(
-    @IPlatformService private readonly platformSrc: IPlatformService
+    @IPlatformService private readonly platformSrc: IPlatformService,
   ) {}
 }
 ```
@@ -41,14 +41,12 @@ const item = [
     useFactory: (i18nService: I18NService) => {
       return i18nService.isChinese()
         ? new ChineseNumberTranspiler()
-        : new EnglishNumberTranspiler()
+        : new EnglishNumberTranspiler();
     },
     deps: [I18NService],
   },
-]
+];
 ```
-
-
 
 ## Optional
 
@@ -57,12 +55,12 @@ When a dependency is not held by an injector, the injector would throw an error 
 ```ts highlight=3,8
 class MapService {
   constructor(
-    @Inject(SatelliteService) private readonly satellite: SatelliteService
+    @Inject(SatelliteService) private readonly satellite: SatelliteService,
   ) {}
 }
 
-const injector = new Injector([[MapService]])
-injector.get(MapService) // ERROR!
+const injector = new Injector([[MapService]]);
+injector.get(MapService); // ERROR!
 ```
 
 You could use `Optional` instead `Inject`, to mark `SatelliteService` as an optional dependency not a required one.
@@ -70,12 +68,12 @@ You could use `Optional` instead `Inject`, to mark `SatelliteService` as an opti
 ```ts highlight=3,8
 class MapService {
   constructor(
-    @Optional(SatelliteService) private readonly satellite?: SatelliteService
+    @Optional(SatelliteService) private readonly satellite?: SatelliteService,
   ) {}
 }
 
-const injector = new Injector([MapService])
-injector.get(MapService)
+const injector = new Injector([MapService]);
+injector.get(MapService);
 ```
 
 In this case, `MapService` could construct, but its property `satellite` would be undefined.
@@ -87,7 +85,7 @@ Similarly, you could use `Many` to mark the dependency could be injected with mu
 ```ts highlight=3,9-10
 class MapService {
   constructor(
-    @Many(ISatelliteService) private readonly satellites: ISatelliteService[]
+    @Many(ISatelliteService) private readonly satellites: ISatelliteService[],
   ) {}
 }
 
@@ -95,6 +93,6 @@ const injector = new Injector([
   [MapService],
   [ISatelliteService, { useClass: GPSSatellite }],
   [ISatelliteService, { useClass: BeidouSatellite }],
-])
-injector.get(MapService)
+]);
+injector.get(MapService);
 ```

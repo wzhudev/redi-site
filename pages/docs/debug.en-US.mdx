@@ -1,12 +1,14 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Debug
 
 ## Import scripts of redi more than once
 
 <Callout>
-[redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
-Maybe your dependencies added redi as its dependency and bundled redi to its dist files. Or you import different versions of redi.
+  [redi]: You are loading scripts of redi more than once! This may cause
+  undesired behavior in your application. Maybe your dependencies added redi as
+  its dependency and bundled redi to its dist files. Or you import different
+  versions of redi.
 </Callout>
 
 This error happens when you import scripts of redi more than once. This usually happens when
@@ -24,7 +26,9 @@ redi use `Symbol` and `instanceof` internally. So things may not work when you i
 ## Could not find dependency registered on
 
 <Callout>
-[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef".
+  [redi]: It seems that you register "undefined" as dependency on the X
+  parameter of "XXX". Please make sure that there is not cyclic dependency among
+  your TypeScript files, or consider using "forwardRef".
 </Callout>
 
 This errors happens when redi is trying to figure out what dependencies `XXX` relies on but a dependency is resolved to `undefined`.
@@ -38,12 +42,11 @@ Let's assume that the dependency resolved to `undefined` is `YYY`.
 To fix this problem, you can use `forwardRef`
 
 ```ts
-import { Inject, forwardRef } from '@wendellhu/redi'
+import { Inject, forwardRef } from "@wendellhu/redi";
 
 class XXX {
-    constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
+  constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
 }
-
 ```
 
 ... or fix cycle dependency in your codebase. We recommend using [dpdm](https://www.npmjs.com/package/dpdm) to find cycle dependency in your codebase. You could traverse the dependency tree staring from the file that contains `XXX`, and break cycles those contains the file.

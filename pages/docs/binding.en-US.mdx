@@ -24,9 +24,9 @@ const injector = new Injector([
 ## By calling the `add` method of the injector
 
 ```ts
-injector.add([SomeClass])
-injector.add([IdentifierA, { useClass: SomeClass }])
-injector.add([IdentifierB, { useValue: SomeValue }])
+injector.add([SomeClass]);
+injector.add([IdentifierA, { useClass: SomeClass }]);
+injector.add([IdentifierB, { useValue: SomeValue }]);
 ```
 
 This approach is more flexible because it does not restrict when you can register bindings. However, this type of binding can be a double-edged sword as it may not have been registered by the time you retrieve dependencies through the injector. Therefore, we recommend using the first method as a priority unless you can ensure the correct order of registration and retrieval.

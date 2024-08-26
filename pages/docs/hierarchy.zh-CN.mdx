@@ -7,15 +7,15 @@
 在两个注入器之间建立父子关系有两种方法，第一种是通过父注入器的 `createChild` 方法：
 
 ```ts highlight=2
-const parentInjector = new Injector([[PlatformService]])
-const childInjector = parentInjector.createChild([[OrderService]]) // 传入子注入器的绑定
+const parentInjector = new Injector([[PlatformService]]);
+const childInjector = parentInjector.createChild([[OrderService]]); // 传入子注入器的绑定
 ```
 
 第二种是创建子注入器时将父注入器传递进去：
 
 ```ts highlight=2
-const parentInjector = new Injector([[PlatformService]])
-const childInjector = new Injector([[OrderService]], parentInjector)
+const parentInjector = new Injector([[PlatformService]]);
+const childInjector = new Injector([[OrderService]], parentInjector);
 ```
 
 ## 单向依赖查找
@@ -23,7 +23,7 @@ const childInjector = new Injector([[OrderService]], parentInjector)
 当子注入器无法解析标识符时，它将会调用其父注入器进行解析，如果父注入器不存在且该标识符对应的依赖是必须的才会抛出错误。下面的例子中，`PlatformService` 将会由 `parentInjector` 创建：
 
 ```ts highlight=2
-childInjector.get(PlatformService)
+childInjector.get(PlatformService);
 ```
 
 ## 依赖查找控制
@@ -34,7 +34,9 @@ childInjector.get(PlatformService)
 class ChartComponent {
   constructor(
     @Self() @Inject(Container) private readonly selfContainer: Container,
-    @SkipSelf() @Optional(Container) private readonly parentContainer?: Container
+    @SkipSelf()
+    @Optional(Container)
+    private readonly parentContainer?: Container,
   ) {}
 }
 ```
@@ -44,14 +46,17 @@ class ChartComponent {
 ```ts highlight=8,9
 const dependencies = [
   [Container],
-  [IChartComponent, {
-    useFactory: (parentContainer: Container, selfContainer: Container) => {
-      // ...
+  [
+    IChartComponent,
+    {
+      useFactory: (parentContainer: Container, selfContainer: Container) => {
+        // ...
+      },
+      deps: [
+        [new SkipSelf(), Container],
+        [new Self(), Container],
+      ],
     },
-    deps: [
-      [new SkipSelf(), Container],
-      [new Self(), Container],
-    ]
-  }]
-]
+  ],
+];
 ```

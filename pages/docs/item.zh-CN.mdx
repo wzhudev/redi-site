@@ -1,13 +1,13 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # 依赖项
 
 redi 支持以下几种依赖项：
 
-* 类依赖项
-* 值依赖项
-* 工厂依赖项
-* 异步依赖项
+- 类依赖项
+- 值依赖项
+- 工厂依赖项
+- 异步依赖项
 
 ## 类依赖项
 
@@ -21,8 +21,8 @@ class AuthService {}
 
 ```ts
 export interface ClassDependencyItem<T> {
-  useClass: Ctor<T>
-  lazy?: boolean
+  useClass: Ctor<T>;
+  lazy?: boolean;
 }
 ```
 
@@ -32,9 +32,9 @@ export interface ClassDependencyItem<T> {
 
 ```ts highlight=21
 interface IHttpInterceptor {
-  intercept(): void
+  intercept(): void;
 }
-const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>("http-interceptor");
 
 class AuthHttpInterceptor implements IHttpInterceptor {
   intercept(): void {}
@@ -42,36 +42,36 @@ class AuthHttpInterceptor implements IHttpInterceptor {
 
 class FileListService {
   constructor(
-    @Inject(IHttpInterceptor) private readonly httpI: IHttpInterceptor
+    @Inject(IHttpInterceptor) private readonly httpI: IHttpInterceptor,
   ) {}
 
   request() {
-    this.httpI.intercept()
+    this.httpI.intercept();
   }
 }
 
 const injector = new Injector([
   [FileListService],
   [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
-])
+]);
 ```
 
 在上面的例子中，`FileListService` 依赖了 `AuthHttpInterceptor`，从注入器获取 `FileListService` 时该类会实例化，但是 `AuthHttpInterceptor` 并未实例化：
 
 ```ts
-const fileListService = injector.get(FileListService)
+const fileListService = injector.get(FileListService);
 ```
 
 只有实际访问了 AuthHttpInterceptor 方法时才会实例化：
 
 ```ts
-fileListService.request() // -> this.httpI.intercept()
+fileListService.request(); // -> this.httpI.intercept()
 ```
 
 通过延迟实例化部分依赖，可以降低应用初始化时的性能开销。
 
 <Callout>
-请确保被延迟实例化的类的构造函数中不存在副作用，否则会导致应用不能按你期望的方式运行。
+  请确保被延迟实例化的类的构造函数中不存在副作用，否则会导致应用不能按你期望的方式运行。
 </Callout>
 
 ## 值作为依赖项
@@ -80,7 +80,7 @@ fileListService.request() // -> this.httpI.intercept()
 
 ```ts
 export interface ValueDependencyItem<T> {
-  useValue: T
+  useValue: T;
 }
 ```
 
@@ -94,8 +94,8 @@ export interface ValueDependencyItem<T> {
 
 ```ts
 export interface FactoryDependencyItem<T> {
-  useFactory: (...deps: any[]) => T
-  deps?: FactoryDep<any>[]
+  useFactory: (...deps: any[]) => T;
+  deps?: FactoryDep<any>[];
 }
 ```
 
@@ -138,7 +138,7 @@ const injector = new Injector([
 
 ```ts
 export interface ExistingDependencyItem<T> {
-  useExisting: DependencyIdentifier<T>
+  useExisting: DependencyIdentifier<T>;
 }
 ```
 
@@ -146,22 +146,26 @@ export interface ExistingDependencyItem<T> {
 
 ```ts
 interface IHttpInterceptor {
-  intercept(): void
+  intercept(): void;
 }
-const IHttpInterceptor = createIdentifier<IHttpInterceptor>('http-interceptor')
+const IHttpInterceptor = createIdentifier<IHttpInterceptor>("http-interceptor");
 
 class AuthHttpInterceptor implements IHttpInterceptor {
   intercept(): void {}
 }
 
-const INetworkInterceptor = createIdentifier<IHttpInterceptor>('network-interceptor')
+const INetworkInterceptor = createIdentifier<IHttpInterceptor>(
+  "network-interceptor",
+);
 
 const injector = new Injector([
   [IHttpInterceptor, { useClass: AuthHttpInterceptor, lazy: true }],
   [INetworkInterceptor, { useExisting: IHttpInterceptor }],
-])
+]);
 
-console.log(injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor)) // true
+console.log(
+  injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor),
+); // true
 ```
 
 ## 异步依赖项
@@ -172,7 +176,7 @@ console.log(injector.get(IHttpInterceptor) === injector.get(INetworkInterceptor)
 export interface AsyncDependencyItem<T> {
   useAsync: () => Promise<
     T | Ctor<T> | [DependencyIdentifier<T>, SyncDependencyItem<T>]
-  >
+  >;
 }
 ```
 
@@ -214,6 +218,6 @@ const injector = new Injector([
 ```ts
 // reportService.ts
 export default class ReportService {
-  report(msg: string): void
+  report(msg: string): void;
 }
 ```

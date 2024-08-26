@@ -13,10 +13,10 @@ const configService = [
     useClass: ConfigService,
     lazy: true,
     onInstantiation: (s: IConfigService) => {
-      s.setConfig()
+      s.setConfig();
     },
   },
-]
+];
 ```
 
 这个函数会在 constructor 或者 factory 执行完毕之后立即调用。如果一个 `ClassDependencyItem` 是惰性实例化的，那么就会在惰性实例化后立即调用。

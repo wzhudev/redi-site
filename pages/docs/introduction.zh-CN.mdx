@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # 快速上手
 
@@ -27,7 +27,7 @@ npm install @wendellhu/redi
 ```
 
 <Callout>
-为了让大家能够方便地使用依赖注入模式开始一个新项目，我们准备了脚手架工具。阅读[设置开发环境](/docs/env)一节了解更多。
+  为了让大家能够方便地使用依赖注入模式开始一个新项目，我们准备了脚手架工具。阅读[设置开发环境](/docs/env)一节了解更多。
 </Callout>
 
 ## 基本使用
@@ -45,7 +45,7 @@ class FileListService {
   constructor() {}
 
   public getUserFiles(): Promise<Files> {
-    const currentUser = AuthService.getCurrentUserInfo()
+    const currentUser = AuthService.getCurrentUserInfo();
     // ...
   }
 }
@@ -56,7 +56,7 @@ class FileListService {
 **第一步：声明依赖关系**
 
 ```typescript highlight=1,4,10,13
-import { Inject } from '@wendellhu/redi'
+import { Inject } from "@wendellhu/redi";
 
 class AuthService {
   public getCurrentUserInfo(): UserInfo {
@@ -68,7 +68,7 @@ class FileListService {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   public getUserFiles(): Promise<Files> {
-    const currentUser = this.authService.getCurrentUserInfo()
+    const currentUser = this.authService.getCurrentUserInfo();
     // ...
   }
 }
@@ -79,9 +79,9 @@ class FileListService {
 **第二步：提供绑定**
 
 ```typescript
-import { Injector } from '@wendellhu/redi'
+import { Injector } from "@wendellhu/redi";
 
-const injector = new Injector([[FileListService], [AuthService]])
+const injector = new Injector([[FileListService], [AuthService]]);
 ```
 
 只需要将依赖项添加到 `Injector` 对象中。
@@ -89,13 +89,13 @@ const injector = new Injector([[FileListService], [AuthService]])
 **第三步：从注入器获取依赖**
 
 ```typescript
-const fileListService = injector.get(FileListService)
+const fileListService = injector.get(FileListService);
 ```
 
 这样你就获得了 `FileListService` 的一个实例！而且它的依赖 `AuthService` 已经被创建好了，缓存在 `Injector` 当中。
 
 ```typescript
-const authService = injector.get(FileListService)
+const authService = injector.get(FileListService);
 ```
 
 阅读下一章节以了解依赖注入模式中的基本概念。

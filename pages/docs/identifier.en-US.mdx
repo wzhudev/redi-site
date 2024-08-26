@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Identifier
 
@@ -11,13 +11,13 @@ A class could be the identifier of iteself:
 ```typescript
 class ClassDependency {}
 
-const injector = new Injector([[ClassDependency]])
+const injector = new Injector([[ClassDependency]]);
 ```
 
 So you can get the dependency from the injector directly:
 
 ```ts
-const classDependency = injector.get(ClassDependency)
+const classDependency = injector.get(ClassDependency);
 ```
 
 However, this approach leave abstraction aside and hence is less flexible.
@@ -29,14 +29,20 @@ The recommended way is to create an identifier with `IdentifierDecorator`, which
 For example, our code needs to depend on a clipboard service to read data from the system clipboard. We can create an interface `IClipboardInterfaceService` and its corresponding identifier:
 
 ```ts highlight=1, 5
-export interface IClipboardInterfaceService{
+export interface IClipboardInterfaceService {
   readText(): string | undefined;
 }
 
-export const IClipboardInterfaceService = createIdentifier<IClipboardInterfaceService>('clipboard-interface');
+export const IClipboardInterfaceService =
+  createIdentifier<IClipboardInterfaceService>("clipboard-interface");
 ```
 
-<Callout>In TypeScript, type variables and value variables are in different namespaces, so it is legal to have an interface and a value with the same name `IClipboardInterfaceService`. This trick can combine the interface and the identifier, reducing the developer's cognitive burden.</Callout>
+<Callout>
+  In TypeScript, type variables and value variables are in different namespaces,
+  so it is legal to have an interface and a value with the same name
+  `IClipboardInterfaceService`. This trick can combine the interface and the
+  identifier, reducing the developer's cognitive burden.
+</Callout>
 
 Then when providing the dependency corresponding to this interface, we can inject different classes in different runtime environments. For example, we can inject an implementation for the native browser API in the browser:
 
@@ -47,7 +53,9 @@ class WebClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterfaceService, { useClass: WebClipboardInterfaceService }]])
+const injector = new Injector([
+  [IClipboardInterfaceService, { useClass: WebClipboardInterfaceService }],
+]);
 ```
 
 And use a bridge to implement in the mobile environment:
@@ -59,16 +67,21 @@ class MobileClipboardInterfaceService implements IClipboardInterfaceService {
   }
 }
 
-const injector = new Injector([[IClipboardInterfaceService, { useClass: MobileClipboardInterfaceService }]])
+const injector = new Injector([
+  [IClipboardInterfaceService, { useClass: MobileClipboardInterfaceService }],
+]);
 ```
 
 Then you can get the dependency by the identifier:
 
 ```ts
-const clipboardService = injector.get(IClipboardInterfaceService)
+const clipboardService = injector.get(IClipboardInterfaceService);
 ```
 
-<Callout>If your application supports multiple environments, you probably have different bundles for each environment. Please make sure that you only include the implementation that is needed in that bundle.</Callout>
+<Callout>
+  If your application supports multiple environments, you probably have
+  different bundles for each environment. Please make sure that you only include
+  the implementation that is needed in that bundle.
+</Callout>
 
 This way, you can easily switch the implementation of the clipboard service in different environments without changing the code that uses the service.
-

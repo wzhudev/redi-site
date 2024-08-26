@@ -9,7 +9,9 @@ In TypeScript, you would have code like this:
 ```ts
 class MapService {
   constructor(
-    @SkipSelf() @ISatelliteService private readonly satellite: ISatelliteService
+    @SkipSelf()
+    @ISatelliteService
+    private readonly satellite: ISatelliteService,
   ) {}
 }
 ```
@@ -19,12 +21,11 @@ The equivalent code in JavaScript would be:
 ```js
 class MapService {
   constructor(satellite) {
-    this.satellite = satellite
+    this.satellite = satellite;
   }
 }
 
-setDependencies(MapService, [[new SkipSelf(), ISatelliteService]])
+setDependencies(MapService, [[new SkipSelf(), ISatelliteService]]);
 ```
 
 As you can see, the syntax for declaring dependencies is consistent with declaring dependencies on factory functions.
-

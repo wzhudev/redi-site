@@ -5,15 +5,15 @@
 There are two ways to create parenting relationship between two injectors. The first approach is to call`createChild` method on the parent injector:
 
 ```ts highlight=2
-const parentInjector = new Injector([[PlatformService]])
-const childInjector = parentInjector.createChild([[OrderService]])
+const parentInjector = new Injector([[PlatformService]]);
+const childInjector = parentInjector.createChild([[OrderService]]);
 ```
 
 The second is to pass the parent injector as the second parameter when constructing an new injector:
 
 ```ts highlight=2
-const parentInjector = new Injector([[PlatformService]])
-const childInjector = new Injector([[OrderService]], parentInjector)
+const parentInjector = new Injector([[PlatformService]]);
+const childInjector = new Injector([[OrderService]], parentInjector);
 ```
 
 ## Single way lookup
@@ -21,7 +21,7 @@ const childInjector = new Injector([[OrderService]], parentInjector)
 When the child injector could not resolve an identifier, it would delegate the request to its parent if possible. And that is called dependency lookup. In the example below, `PlatformService` is actually constructed by `parentInjector`.
 
 ```ts highlight=2
-childInjector.get(PlatformService)
+childInjector.get(PlatformService);
 ```
 
 ## Interfere lookup
@@ -34,7 +34,7 @@ class ChartComponent {
     @Self() @Inject(Container) private readonly selfContainer: Container,
     @SkipSelf()
     @Optional(Container)
-    private readonly parentContainer?: Container
+    private readonly parentContainer?: Container,
   ) {}
 }
 ```

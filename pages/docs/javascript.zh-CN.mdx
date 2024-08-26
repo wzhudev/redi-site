@@ -9,7 +9,9 @@ redi 对于 TypeScript 的语法依赖仅限于装饰器，而装饰器仅被用
 ```ts
 class MapService {
   constructor(
-    @SkipSelf() @ISatelliteService private readonly satellite: ISatelliteService
+    @SkipSelf()
+    @ISatelliteService
+    private readonly satellite: ISatelliteService,
   ) {}
 }
 ```
@@ -19,11 +21,11 @@ class MapService {
 ```js
 class MapService {
   constructor(satellite) {
-    this.satellite = satellite
+    this.satellite = satellite;
   }
 }
 
-setDependencies(MapService, [[new SkipSelf(), ISatelliteService]])
+setDependencies(MapService, [[new SkipSelf(), ISatelliteService]]);
 ```
 
 可以看到，此时声明依赖的语法和对工厂函数声明依赖的语法是一致的。

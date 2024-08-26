@@ -1,12 +1,14 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # 排查问题
 
 ## Import scripts of redi more than once
 
 <Callout>
-[redi]: You are loading scripts of redi more than once! This may cause undesired behavior in your application.
-Maybe your dependencies added redi as its dependency and bundled redi to its dist files. Or you import different versions of redi.
+  [redi]: You are loading scripts of redi more than once! This may cause
+  undesired behavior in your application. Maybe your dependencies added redi as
+  its dependency and bundled redi to its dist files. Or you import different
+  versions of redi.
 </Callout>
 
 这个错误的含义是你加载了多次 redi 的代码。这个错误的原因可能是以下其中一种：
@@ -26,7 +28,9 @@ redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 
 ## Could not find dependency registered on
 
 <Callout>
-[redi]: It seems that you register "undefined" as dependency on the X parameter of "XXX". Please make sure that there is not cyclic dependency among your TypeScript files, or consider using "forwardRef".
+  [redi]: It seems that you register "undefined" as dependency on the X
+  parameter of "XXX". Please make sure that there is not cyclic dependency among
+  your TypeScript files, or consider using "forwardRef".
 </Callout>
 
 当 redi 试图弄清楚某个类 `XXX` 依赖于哪些依赖项时，发现某个依赖项被解析为 `undefined`，就会抛出这个错误。发生这个错误的原因大致如下：
@@ -40,12 +44,11 @@ redi 在内部使用了 `Symbol` 和 `instanceof`。所以当你加载了多次 
 为了解决这个问题，你可以使用 `forwardRef`，这会导致对 `YYY` 的取值过程延后到构建 `XXX` 的实例时，从而避免这个问题：
 
 ```ts
-import { Inject, forwardRef } from '@wendellhu/redi'
+import { Inject, forwardRef } from "@wendellhu/redi";
 
 class XXX {
-    constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
+  constructor(@Inject(forwardRef(() => YYY)) private readonly _yyy: YYY) {}
 }
-
 ```
 
-更加推荐的做法是解除文件之间的循环依赖。推荐使用 [dpdm](https://www.npmjs.com/package/dpdm) 来查找文件直接的依赖关系。你可以从  `XXX` 所在文件开始遍历依赖关系，然后把包含这个文件的循环依赖打破。
+更加推荐的做法是解除文件之间的循环依赖。推荐使用 [dpdm](https://www.npmjs.com/package/dpdm) 来查找文件直接的依赖关系。你可以从 `XXX` 所在文件开始遍历依赖关系，然后把包含这个文件的循环依赖打破。
