@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # 前端中的依赖注入
 
@@ -18,10 +18,14 @@ import { Callout } from 'nextra/components'
 
 ```jsx
 export class FindReplaceController extends RxDisposable {
-    constructor(
-    ) {
-		    this._shortcutService = new ShortcutService(commandService, platformService, contextService, layoutService);
-    }
+  constructor() {
+    this._shortcutService = new ShortcutService(
+      commandService,
+      platformService,
+      contextService,
+      layoutService
+    );
+  }
 }
 ```
 
@@ -33,16 +37,21 @@ export class FindReplaceController extends RxDisposable {
 
 一种常见的解决方案是把这些构造参再通过调用方的构造参数传递过来：
 
-```jsx
+```typescript
 export class FindReplaceController extends RxDisposable {
-    constructor(
-        commandService: ICommandService,
-        platformService: IPlatformService,
-        contextService: IContextService,
-        layoutService: ILayoutService,
-    ) {
-		    this._shortcutService = new ShortcutService(commandService, platformService, contextService, layoutService);
-    }
+  constructor(
+    commandService: ICommandService,
+    platformService: IPlatformService,
+    contextService: IContextService,
+    layoutService: ILayoutService
+  ) {
+    this._shortcutService = new ShortcutService(
+      commandService,
+      platformService,
+      contextService,
+      layoutService
+    );
+  }
 }
 ```
 
@@ -50,33 +59,26 @@ export class FindReplaceController extends RxDisposable {
 
 如果我们不在 `FindReplaceController` 里构造 `ShortcutService` 而是直接将它作为 `FindReplaceController` 的参数传入，问题是否能够得到解决呢？
 
-```jsx
+```typescript
 export class FindReplaceController extends RxDisposable {
-    constructor(
-        // ...
-        private readonly _shortcutService: IShortcutService,
-        // ...
-    ) {
-    }
+  constructor(private readonly _shortcutService: IShortcutService) {}
 }
 ```
 
 答案是并不能，这样只是将耦合的两者从 `FindReplaceController` 和 `ShortcutService` 变为 `ShortcutService` 和另一个模块（例如下面的 `SomeModule`）而已，总有一个模块必须要负责构建 `ShortcutService`。更糟糕的是， `FindReplaceController` 还依赖其他的模块，如果 `SomeModule` 还要负责构建其他依赖，它的构造参数就会更加地多，代码也就会越来越难以维护。
 
-```jsx
+```typescript
 export class SomeModule {
-    constructor(
-        commandService: ICommandService,
-        platformService: IPlatformService,
-        contextService: IContextService,
-        layoutService: ILayoutService,
-    ) {
-		    this._findReplaceController = new FindReplaceController(
-				    // ....
-		        new ShortcutService(commandService, platformService, contextService, layoutService);
-				    // ....
-		    );
-    }
+  constructor(
+    commandService: ICommandService,
+    platformService: IPlatformService,
+    contextService: IContextService,
+    layoutService: ILayoutService,
+  ) {
+    this._findReplaceController = new FindReplaceController(
+      new ShortcutService(commandService, platformService, contextService, layoutService);
+    );
+  }
 }
 ```
 
@@ -118,20 +120,20 @@ const app = new App()
 对于一个大型应用，某个功能在不同的环境上有不同的表现。例如对于“弹出对话框”这个功能，通常可能会下面的代码：
 
 ```tsx
-import pcDialog from 'pcDialog'
-import mobileDialog from 'mobileDialog'
+import pcDialog from "pcDialog";
+import mobileDialog from "mobileDialog";
 
 class OrderService {
   public askUser() {
-    const title = 'Hello'
+    const title = "Hello";
     if (platformUtil.isDesktop()) {
       pcDialog.show({
         title,
-      })
+      });
     } else {
       mobileDialog.prompt({
         text: title,
-      })
+      });
     }
   }
 }
@@ -144,23 +146,23 @@ class OrderService {
 糟糕了，之前在代码里写了多少处 `mobileDialog.prompt`，就要修改多少处代码，好把更多的 if else 塞进去，然后还需要把移动端的实现改为对 js bridge 的调用，就像下面这样：
 
 ```tsx highlight=6-17
-const title = 'Hello'
+const title = "Hello";
 if (platformUtil.isDesktop()) {
   pcDialog.show({
     title,
-  })
+  });
 } else if (platformUtil.isIOS()) {
   iOSDialogBridge.prompt({
     text: title,
-  })
+  });
 } else if (platformUtil.isMiniProgram()) {
   miniProgramDialogBridge.dialog({
     title,
-  })
+  });
 } else {
   androidDialogBridge.prompt({
     text: title,
-  })
+  });
 }
 ```
 
@@ -189,20 +191,20 @@ export class AuthService {
   }
 
   public changeAuth(auth) {
-    FileService.INSTANCE.changePermission(auth)
+    FileService.INSTANCE.changePermission(auth);
   }
 }
 
 export class FileService {
   static get INSTANCE() {
     if (!init) {
-      return new FileService()
+      return new FileService();
     }
   }
 
   public changeFile(file) {
     if (file.locked) {
-      AuthService.INSTANCE.changeAuth({ editable: false })
+      AuthService.INSTANCE.changeAuth({ editable: false });
     }
   }
 }
@@ -212,7 +214,7 @@ export class FileService {
 
 这三个场景实际展示了依赖管理的三个问题。
 
-**依赖构造问题。** 
+**依赖构造问题。**
 
 手动构造类需要：
 
@@ -222,7 +224,7 @@ export class FileService {
 
 在上面的例子中，构造的顺序和参数是由开发者来通过编码指定的，类的构造者是一个知道如何构建其他类的一个巨大的入口类，我们也看到了这种方式的问题所在。对于构造问题我们需要解答：**如何确定构造的顺序、参数并自动构造？**
 
-**抽象依赖问题。** 
+**抽象依赖问题。**
 
 一个模块 B 依赖的另一个模块 A，到底应该是一个抽象的接口，还是一个具体的实现？
 
@@ -232,7 +234,7 @@ SOLID 原则当中的 D（Dependency inversion principle，依赖反转原则）
 
 那么**如何才能把不同的底层实现传递给高层？**
 
-**依赖关系问题。** 
+**依赖关系问题。**
 
 复杂的依赖关系容易导致循环依赖，而循环依赖是导致软件行为不可控的很大的风险因素。所以对于关系问题我们需要解答：**如何才能避免代码中形成循环依赖**？
 
@@ -240,14 +242,16 @@ DI 对以上三个问题提出了系统的解决方案。
 
 ## DI 的基本概念
 
-<Callout>本小节的内容涉及 redi 的 API，请参考阅 [这里的文档](/docs/concepts)</Callout>
+<Callout>
+  本小节的内容涉及 redi 的 API，请参考阅 [这里的文档](/docs/concepts)
+</Callout>
 
 使用 DI 一般分为以下三步：
 
 **第一步，声明依赖之间的依赖关系**。假设 B 类要依赖于 A 类，就可以通过 `Inject` 装饰器来声明：
 
 ```tsx
-import { Inject } from '@wendellhu/redi'
+import { Inject } from "@wendellhu/redi";
 
 class A {}
 
@@ -259,22 +263,22 @@ class B {
 **第二步，将依赖项添加到注入器中**。
 
 ```tsx
-import { Injector } from '@wendellhu/redi'
+import { Injector } from "@wendellhu/redi";
 
-const injector = new Injector([[A], [B]])
+const injector = new Injector([[A], [B]]);
 ```
 
 **第三步，获取依赖。** 注入器解析 B 并发现它依赖 A，就会先解析 A，构造 A 的实例之后再将它传递给 B 的构造函数，并最终返回 B 的实例。
 
 ```tsx
-const b = injector.get(B)
+const b = injector.get(B);
 ```
 
 就这么简单！现在你已经了解了 DI 的基本运作方式，让我们看看 DI 是如何解决上面提出的三个问题的。
 
 ## 问题的解决
 
-**构造问题的解决。** 
+**构造问题的解决。**
 
 从 DI 获取依赖项时，不需要手动调用构造函数，因此构造问题也就不存在了。
 
@@ -305,7 +309,7 @@ const app = injector.createInstance(App)
 
 通过注入器获取 `App` 实例时，注入器会自动分析依赖关系，按照顺序构建各个类，并确定构造函数的参数。可以看到改写过后，不仅代码变得十分简洁，`App` 的职责明显更少了，它并不需要了解 `HttpInterceptor` 是如何构造的就可以调用 `HttpService`。
 
-**抽象问题的解决。** 
+**抽象问题的解决。**
 
 DI 通过标识符-依赖项对来做到接口和实现的解耦。回到前面的对话框的例子，用 DI 可以这么写：
 
@@ -349,7 +353,8 @@ const orderService = injector.createInstance(OrderService)
 2. 不会 ship 任何多余的代码
 
 <Callout>
-  webpack 等打包器支持设置多个 entry，因此你可以方便地为不同平台打包，而且只需要打包一次。
+  webpack 等打包器支持设置多个
+  entry，因此你可以方便地为不同平台打包，而且只需要打包一次。
 </Callout>
 
 无论后面对话框需求发生了怎样的变化，我们只需要维护打包入口和适配器的实现，而不需要修改业务代码。比如需要将移动端拆分成 iOS 和 Android 的原生实现，就可以这样做：
@@ -363,7 +368,7 @@ const injector = new Injector([
       useClass: AndroidDialogAdapter,
     },
   ],
-])
+]);
 
 // ios.ts
 const injector = new Injector([
@@ -373,10 +378,10 @@ const injector = new Injector([
       useClass: IOSDialogAdapter,
     },
   ],
-])
+]);
 ```
 
-**关系问题的解决。** 
+**关系问题的解决。**
 
 从 DI 获取依赖项时，DI 会分析依赖项之间是否存在循环依赖，如果有就会抛出错误：
 
@@ -385,7 +390,7 @@ export class AuthService {
   constructor(@Inject(FileService) private readonly fileService: FileService) {}
 
   public changeAuth(auth) {
-    this.fileService.changePermission(auth)
+    this.fileService.changePermission(auth);
   }
 }
 
@@ -394,14 +399,14 @@ export class FileService {
 
   public changeFile(file) {
     if (file.locked) {
-      this.authService.changeAuth({ editable: false })
+      this.authService.changeAuth({ editable: false });
     }
   }
 }
 
-const injector = new Inject([[AuthService], [FileService]])
+const injector = new Inject([[AuthService], [FileService]]);
 
-injector.get(FileService) // ERROR!
+injector.get(FileService); // ERROR!
 ```
 
 ## 在大型项目中使用 DI
@@ -417,10 +422,10 @@ injector.get(FileService) // ERROR!
 ```tsx highlight=4
 class StorageService {}
 
-const parentInjector = new Injector([[StorageService]])
-const childInjector = parentInjector.createChild([])
+const parentInjector = new Injector([[StorageService]]);
+const childInjector = parentInjector.createChild([]);
 
-childInjector.get(StorageService) // -> 最终从 parentInjector 获取 StorageService
+childInjector.get(StorageService); // -> 最终从 parentInjector 获取 StorageService
 ```
 
 由于这种委托关系只能是从子节点到父节点，因此只需要将下层模块放在父容器中，上层模块放在子容器中，就可以保证下层模块可以被注入到上层模块中，反过来则不可以。
@@ -428,15 +433,15 @@ childInjector.get(StorageService) // -> 最终从 parentInjector 获取 StorageS
 ```tsx
 class DataModel {}
 
-const parentInjector = new Injector([[DataModel]])
+const parentInjector = new Injector([[DataModel]]);
 
 class Controller {
   constructor(@Inject(DataModel) private readonly dataModel: DataModel) {}
 }
 
-const childInjector = parentInjector.createChild([[Controller]])
+const childInjector = parentInjector.createChild([[Controller]]);
 
-childInjector.get(Controller) // -> Controller
+childInjector.get(Controller); // -> Controller
 ```
 
 ### DI 与设计原则
@@ -457,9 +462,7 @@ childInjector.get(Controller) // -> Controller
 - **视图与状态和逻辑分离**。把业务逻辑逻辑封装到某个类当中，然后注入到组件里面去，组件只负责通过约定的接口从这些类中获取数据并进行渲染，从而做到关注点分离，修改 UI 的时候，不用去考虑业务逻辑，反之亦然。
 - **基于依赖注入的状态管理**。基于上面这一点，可以使用 DI 来做应用状态管理，将状态与改变这些状态的方法都封装都某个类中，组件通过 DI 获取到这个类，然后订阅数据的变化，在数据发生变更的时候重新渲染；当用户做出交互时，调用类的方法触发状态变更。相比于 Redux 等类似方案，DI 不需要引入 reducer, side effect, action 等新概念和 redux-saga 等副作用管理工具，更易编写、阅读和调试。
 
-<Callout>
-阅读 [文档](/docs/react) 以了解如何使用相关 API。
-</Callout>
+<Callout>阅读 [文档](/docs/react) 以了解如何使用相关 API。</Callout>
 
 ## 结论：什么时候使用 DI
 
