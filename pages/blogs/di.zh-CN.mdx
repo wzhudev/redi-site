@@ -10,21 +10,112 @@ import { Callout } from 'nextra/components'
 
 依赖注入是最近几年在前端领域用得越来越多的一种设计模式，本文的目的就是要介绍这种模式如何贯彻抽象思想并反映面向对象设计原则的，还会讨论依赖注入模式本身的特性，以及如何在项目中运用它。
 
-<Callout>
-上面的文字似乎暗示：设计模式是通过设计原则演绎出来的，实际上并非如此，设计原则往往是通过设计模式归纳出来的。我在这里想表达的是：抽象的武器，可以很“抽象”，也可以很“具体“，而本文要讨论的是一种“具体”的武器，而且它反映了那些更加“抽象”的抽象思想。
-</Callout>
+我们先来看一个例子，然后探究大型项目中常见的依赖管理问题，接着介绍 **依赖注入（Dependency injection, DI）** 模式，最后介绍如何在大型应用和 React 项目中使用 DI。
 
-我们先来看一些例子，然后归纳出问题，接着引出 **依赖注入（Dependency injection, DI）** 模式，最后介绍如何在大型应用和 React 项目中使用 DI。对于那些对 DI 技术选型感兴趣的朋友，我在最后补充了一些内容。
+## 从构造一个类说起
 
-欢迎大家评论和指出错误。
+我们在使用一个类之前需要调用它的构造函数。假设 `FindReplaceController` 依赖 `ShortcutService` ，可编写如下代码：
 
-## 依赖的相关问题
+```jsx
+export class FindReplaceController extends RxDisposable {
+    constructor(
+    ) {
+		    this._shortcutService = new ShortcutService(commandService, platformService, contextService, layoutService);
+    }
+}
+```
 
-对于大型项目而言，依赖的管理是一个相当复杂的问题。
+这一段代码看似简单，但是暗藏玄机：
 
-### 问题一
+**如何获取 `ShortcutService` 所需的参数，即 `commandService` 等？**
 
-应用的某个功能在不同的操作系统上有不同的实现方式。例如对于“弹出对话框”这个功能，你可能会写出下面这样的代码：
+这些参数大概率不是构造方（此例中即 `FindReplaceService`）所持有的变量，因此构造方得先想办法获取到参数。换句话说 `ShortcutService` 如何构造的细节被暴露给了 `FindReplaceController`。
+
+一种常见的解决方案是把这些构造参再通过调用方的构造参数传递过来：
+
+```jsx
+export class FindReplaceController extends RxDisposable {
+    constructor(
+        commandService: ICommandService,
+        platformService: IPlatformService,
+        contextService: IContextService,
+        layoutService: ILayoutService,
+    ) {
+		    this._shortcutService = new ShortcutService(commandService, platformService, contextService, layoutService);
+    }
+}
+```
+
+这样导致了新的问题：如果我们要修改 `ShortcutService` 的构造参数，我们必须同时修改 `FindReplaceController`。
+
+如果我们不在 `FindReplaceController` 里构造 `ShortcutService` 而是直接将它作为 `FindReplaceController` 的参数传入，问题是否能够得到解决呢？
+
+```jsx
+export class FindReplaceController extends RxDisposable {
+    constructor(
+        // ...
+        private readonly _shortcutService: IShortcutService,
+        // ...
+    ) {
+    }
+}
+```
+
+答案是并不能，这样只是将耦合的两者从 `FindReplaceController` 和 `ShortcutService` 变为 `ShortcutService` 和另一个模块（例如下面的 `SomeModule`）而已，总有一个模块必须要负责构建 `ShortcutService`。更糟糕的是， `FindReplaceController` 还依赖其他的模块，如果 `SomeModule` 还要负责构建其他依赖，它的构造参数就会更加地多，代码也就会越来越难以维护。
+
+```jsx
+export class SomeModule {
+    constructor(
+        commandService: ICommandService,
+        platformService: IPlatformService,
+        contextService: IContextService,
+        layoutService: ILayoutService,
+    ) {
+		    this._findReplaceController = new FindReplaceController(
+				    // ....
+		        new ShortcutService(commandService, platformService, contextService, layoutService);
+				    // ....
+		    );
+    }
+}
+```
+
+但是对于 `FindReplaceController` 而言，此时它确实不用再关心 `ShortcutService` 是如何构建的，换句话说，对于 `FindReplaceController`，`ShortcutService` 的**构造**和**使用**是解耦的。这一解耦非常重要，它是依赖注入的核心：**使用方只需声明要使用哪些依赖，而不必关心如何构建这些依赖**。
+
+## 大型项目中的依赖问题
+
+### 场景一
+
+这个问题是上一个问题在大型项目中的延伸。实例化整个应用时，通常的做法是创建一个类作为应用的入口，递归地构造整个应用的依赖关系。例如：
+
+```tsx highlight=3,4,5,6,16
+class App {
+  constructor() {
+    this.model = new Model()
+    this.controller = new Controller(this.model)
+    this.state = new State(this.model)
+    this.httpService = new HttpService(new AuthInterceptor(this.state))
+  }
+}
+
+class Controller() {
+  constructor(model: Model) {
+    this.model = model
+  }
+}
+
+const app = new App()
+```
+
+这种做法的问题上面已经提到，另外还存在如下问题：
+
+1. 难以理清模块的依赖关系。模块越多，我们就需要花越多的精力去调配它们初始化的先后顺序，手动传递构造函数需要的参数等等；
+2. 这种写法违背了最少知识原则，提高了模块之间的耦合性。在这个例子中 `App` 为了调用 `HttpService` 需要知道 `AuthInterceptor` 是如何构造的，如果 `AuthInterceptor` 的构造函数新增了一个参数，那么 `App` 的代码也必须对应做出修改。实际上，所有模块的构造参数信息都暴露给了 `App`。
+3. 这种写法还导致很难隔离出一个模块单独进行测试。假设要测试上文中的 `HttpService`，就必须把 `AuthInterceptor` `State` `Model` 等等全部构造一遍，也不得不根据这些依赖的行为来编写用例。
+
+### 场景二
+
+对于一个大型应用，某个功能在不同的环境上有不同的表现。例如对于“弹出对话框”这个功能，通常可能会下面的代码：
 
 ```tsx
 import pcDialog from 'pcDialog'
@@ -73,46 +164,13 @@ if (platformUtil.isDesktop()) {
 }
 ```
 
-有经验的开发者马上就能够指出：只要把对话框的调用封装在一个 npm 包就可以了，并不用去修改原来的代码。这的确可以省不少事情（真希望所有问题都能通过第三方依赖来解决！），我们只需要替换对 mobileDialog 的引用就可以了。到目前为止，只是多了一些维护 npm 包的成本，还能接受。
+有经验的开发者马上就能够指出：只要把对话框的调用封装在一个 npm 包里面，然后让这个 npm 包来考虑跨平台的事情就可以了，确实如此，但是修改代码的麻烦还只是这个问题的一个比较小的方面，另外一个方面是：如果每个平台差异问题都要通过写 `if else` 来处理，你的打包产物中就会有很多套不同的实现，而很多代码实际并不会在用户的设备上运行。
 
-但是修改代码的麻烦还只是这个问题的一个比较小的方面，另外一个方面更值得考虑：为什么 PC 端要加载 mobile 端组件的代码呢，为什么 iOS 要加载 Android 端组件的代码呢？如果每个平台差异问题都要通过写 if else 来处理，你的打包产物中就会有很多套不同的实现，而很多代码实际并不会在用户的设备上运行。如果你的确在乎包体积，可能会选择在 npm 包中懒加载各个平台的实现，这样你就不得不要求所有 npm 包用户把他们的代码改成异步调用的，这种方案看起来就很不现实，不做考虑。
+一种可能的方案是：在构建的时候通过 webpack alias 切换 `mobileDialog` 实际引用的 npm 包，对不同平台分别构建一次就可以了，但这种方案会极大地增加 CI 时间。
 
-你可能会想到这样的方案：在构建的时候通过 webpack alias 切换 mobileDialog 实际引用的 npm 包，对不同平台分别构建一次就可以了，但这种方案要求开发者为每一种实现都做一次封装，同时也会极大地增加 CI 时间，显然也是不够优雅的。
+虽然我们早就知道产品经理频繁变更需求才是导致代码质量降低的罪魁祸首（开个玩笑），但回头想想：这里的一开始的设计是不是就有问题？没错，问题的本质就在于 `OrderService` （还有其他写了类似代码的类）不够内聚，它耦合了“应该弹哪种对话框“的逻辑。如何让这个类更加内聚呢？应该把“弹对话框“这件事交给一个专门的模块来处理，然后依赖它。前面所述的封装 npm 包一个确实是一种解决途径，但我们后面会看到依赖注入模式给出了一种更加灵活的解决方案。
 
-虽然我们早就知道产品经理才是导致代码质量降低的罪魁祸首（大雾），但回头想想：这里的一开始的设计是不是就有问题？没错，即使产品经理没有提后面的这些需求，用户还是会在桌面端上加载移动端的对话框。
-
-问题的本质就在于——用我们熟知的 OO 设计原则来描述—— `OrderService` （还有其他写了类似代码的类）不够内聚，它耦合了“应该弹哪种对话框“的逻辑。如何让这个类更加内聚呢？应该把“弹对话框“这件事交给一个专家来处理，然后**依赖**它。封装一个第三方依赖确实是一种解决途径，但是它没有办法解决包体积的问题。我们后面会看到，依赖注入模式给出了一种更加灵活的解决方案。
-
-### 问题二
-
-类终究是要被实例化的。通常的做法是创建一个类作为应用的入口，在这个类里面创建很多类作为模块的入口，然后在模块入口里再去创建各个子类……然后通过实例化入口类来启动整个应用，就像下面这样：
-
-```tsx highlight=3,4,5,6,16
-class App {
-  constructor() {
-    this.model = new Model()
-    this.controller = new Controller(this.model)
-    this.state = new State(this.model)
-    this.httpService = new HttpService(new AuthInterceptor(this.state))
-  }
-}
-
-class Controller() {
-  constructor(model: Model) {
-    this.model = model
-  }
-}
-
-const app = new App()
-```
-
-这种做法存在如下问题：
-
-1. 这种写法最终会随着项目变得复杂而变得难于追踪和理解。模块越多，我们就需要花越多的时间去手动调配它们初始化的先后顺序，手动传递构造函数需要的参数；
-2. 其次，这种写法违背了最少知识原则，提高了模块之间的耦合性。在这个例子中 `App` 为了调用 `HttpService` 需要知道 `AuthInterceptor` 是如何构造的，如果 `AuthInterceptor` 的构造函数新增了一个参数，那么 `App` 的代码也必须对应做出修改；
-3. 最后，这种写法还导致了一个问题，即很难隔离出一个模块单独进行测试。假设你要测试上文中的 `HttpService`，就必须把 `AuthInterceptor` `State` `Model` 等等全部构造一遍，也不得不根据这些依赖的行为来编写用例。
-
-### 问题三
+### 场景三
 
 当应用当中的模块多了之后，模块之间的依赖关系就会变得越来越复杂，越来越难管理。
 
@@ -150,33 +208,39 @@ export class FileService {
 }
 ```
 
-上面是一个较为简单的例子，实际情况远比这个更复杂。
-
 ### 小结
 
-我们对上面三个例子做一个小结，这三个例子实际上反映了依赖管理的三个问题。
+这三个场景实际展示了依赖管理的三个问题。
 
-**抽象问题。** 即一个模块 B 依赖的另一个模块 A，到底应该是一个抽象的接口，还是一个具体的实现？SOLID 原则当中的 D（Dependency inversion principle，依赖反转原则）告诉我们：
+**依赖构造问题。** 
 
-> 高层不应当依赖低层，两者都应该依赖抽象。
-
-第一个例子展示了：如果如果高层（`OrderService`）依赖于一个（更糟地情况下，多个）具体的低层实现（比如一个第三方 npm 包），那么在业务要求改变低层行为的时候，改变就会泄漏到高层中去。相反，如果高层依赖的只是一个“支持同步唤起对话框”的接口，通过在低层提供满足同一接口的不同实现，我们就能在不改动高层代码的前提下满足低层的业务需求。概念是简单的，问题是： **我们如何才能把低层不同的实现交给高层呢？**
-
-**构造问题。** 我们已经看到了手动构造类需要：
+手动构造类需要：
 
 1. 确定构造的顺序
 2. 确定构造的参数
 3. 确定谁来构造
 
-在上面的例子中，构造的顺序和参数是由开发者来制定的，类的构造者则往往是一个知道如何构建其他类的一个巨大的入口类，我们也看到了这种方式的问题所在。对于构造问题我们需要解答：**如何让程序自动确定构造的顺序和构造的参数？**
+在上面的例子中，构造的顺序和参数是由开发者来通过编码指定的，类的构造者是一个知道如何构建其他类的一个巨大的入口类，我们也看到了这种方式的问题所在。对于构造问题我们需要解答：**如何确定构造的顺序、参数并自动构造？**
 
-**关系问题。** 复杂的依赖关系容易导致循环依赖，而循环依赖是导致软件行为不可控的很大的风险因素。所以对于关系问题我们需要解答：**如何才能避免代码中形成循环依赖**？
+**抽象依赖问题。** 
 
-DI 对以上三个问题提出了系统的解决方案。接下来，我们来介绍 DI 模式。
+一个模块 B 依赖的另一个模块 A，到底应该是一个抽象的接口，还是一个具体的实现？
+
+SOLID 原则当中的 D（Dependency inversion principle，依赖反转原则）告诉我们：
+
+> 高层不应当依赖低层，两者都应该依赖抽象。
+
+那么**如何才能把不同的底层实现传递给高层？**
+
+**依赖关系问题。** 
+
+复杂的依赖关系容易导致循环依赖，而循环依赖是导致软件行为不可控的很大的风险因素。所以对于关系问题我们需要解答：**如何才能避免代码中形成循环依赖**？
+
+DI 对以上三个问题提出了系统的解决方案。
 
 ## DI 的基本概念
 
-<Callout>本小节的内容请参考阅读[这部分文档](/docs/concepts)</Callout>
+<Callout>本小节的内容涉及 redi 的 API，请参考阅 [这里的文档](/docs/concepts)</Callout>
 
 使用 DI 一般分为以下三步：
 
@@ -208,9 +272,42 @@ const b = injector.get(B)
 
 就这么简单！现在你已经了解了 DI 的基本运作方式，让我们看看 DI 是如何解决上面提出的三个问题的。
 
-## 依赖问题的解决
+## 问题的解决
 
-**抽象问题的解决。** DI 通过标识符-依赖项对来做到接口和实现的解耦。回到前面的对话框的例子，用 DI 可以这么写：
+**构造问题的解决。** 
+
+从 DI 获取依赖项时，不需要手动调用构造函数，因此构造问题也就不存在了。
+
+我们把上面的例子改写为 DI：
+
+```tsx highlight=3-6,11,20
+class App {
+  constructor(
+    @Inject(Model) private readonly Model,
+    @Inject(Controller) private readonly Controller,
+    @Inject(State) private readonly State,
+    @Inject(HttpService) private readonly HttpService
+  ) {}
+}
+
+class Controller() {
+  constructor(@Inject(Model) private readonly Model) {}
+}
+
+const injector = new Injector([
+  [Model],
+  [Controller],
+  // ...
+])
+
+const app = injector.createInstance(App)
+```
+
+通过注入器获取 `App` 实例时，注入器会自动分析依赖关系，按照顺序构建各个类，并确定构造函数的参数。可以看到改写过后，不仅代码变得十分简洁，`App` 的职责明显更少了，它并不需要了解 `HttpInterceptor` 是如何构造的就可以调用 `HttpService`。
+
+**抽象问题的解决。** 
+
+DI 通过标识符-依赖项对来做到接口和实现的解耦。回到前面的对话框的例子，用 DI 可以这么写：
 
 ```tsx highlight=1-3,9,12,18,25,29
 interface IDialogService {
@@ -279,36 +376,9 @@ const injector = new Injector([
 ])
 ```
 
-**构造问题的解决。** 从 DI 获取依赖项时，不需要手动调用构造函数，因此构造问题也就不存在了。
+**关系问题的解决。** 
 
-我们把上面的例子改写为 DI：
-
-```tsx highlight=3-6,11,20
-class App {
-  constructor(
-    @Inject(Model) private readonly Model,
-    @Inject(Controller) private readonly Controller,
-    @Inject(State) private readonly State,
-    @Inject(HttpService) private readonly HttpService
-  ) {}
-}
-
-class Controller() {
-  constructor(@Inject(Model) private readonly Model) {}
-}
-
-const injector = new Injector([
-  [Model],
-  [Controller],
-  // ...
-])
-
-const app = injector.createInstance(App)
-```
-
-通过注入器获取 `App` 实例时，注入器会自动分析依赖关系，按照顺序构建各个类，并确定构造函数的参数。可以看到改写过后，不仅代码变得十分简洁，`App` 的职责明显更少了，它并不需要了解 `HttpInterceptor` 是如何构造的就可以调用 `HttpService`。
-
-**关系问题的解决。** 从 DI 获取依赖项时，DI 会分析依赖项之间是否存在循环依赖，如果有就会抛出错误：
+从 DI 获取依赖项时，DI 会分析依赖项之间是否存在循环依赖，如果有就会抛出错误：
 
 ```tsx highlight=2,10,21
 export class AuthService {
@@ -388,12 +458,12 @@ childInjector.get(Controller) // -> Controller
 - **基于依赖注入的状态管理**。基于上面这一点，可以使用 DI 来做应用状态管理，将状态与改变这些状态的方法都封装都某个类中，组件通过 DI 获取到这个类，然后订阅数据的变化，在数据发生变更的时候重新渲染；当用户做出交互时，调用类的方法触发状态变更。相比于 Redux 等类似方案，DI 不需要引入 reducer, side effect, action 等新概念和 redux-saga 等副作用管理工具，更易编写、阅读和调试。
 
 <Callout>
-阅读[文档](/docs/react)以了解如何使用相关 API。
+阅读 [文档](/docs/react) 以了解如何使用相关 API。
 </Callout>
 
-## 什么时候使用 DI
+## 结论：什么时候使用 DI
 
-DI 想要解决的问题十分明确，就是软件中的依赖问题，即依赖的抽象问题、依赖的构造问题、依赖的关系问题，因此，如果软件中有许多不同的模块，模块之间的依赖关系复杂，而你又需要以一种低心智负担的方式来管理这些依赖关系，让各个模块尽量做到高内聚低耦合，确保架构具备一定的灵活性，那么使用 DI 就非常合适。
+DI 想要解决的问题十分明确：软件中的依赖问题，依赖的构造问题、依赖的抽象问题和依赖的关系问题。如果软件中有许多不同的模块，模块之间的依赖关系复杂，而你想要以一种低心智负担的方式来管理这些依赖关系，让各个模块尽量做到高内聚低耦合，确保架构具备一定的灵活性，那么使用 DI 就非常合适。
 
 ## DI 设计方案的讨论
 
