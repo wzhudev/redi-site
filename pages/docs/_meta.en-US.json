@@ -12,6 +12,5 @@
   "forwardref": "forwardRef",
   "react": "Using in React",
   "env": "Setup Dev Environment",
-  "javascript": "Use with JavaScript & Babel",
   "debug": "Debug"
 }

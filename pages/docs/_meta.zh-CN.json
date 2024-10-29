@@ -12,7 +12,6 @@
   "forwardref": "forwardRef",
   "react": "在 React 中使用",
   "env": "设置开发环境",
-  "javascript": "在 JavaScript 中使用",
   "debug": "问题排查"
 }
 
